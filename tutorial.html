@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Tutorial &#8212; PyIBL 5.1.6 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d1102ebc" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=a66d8bb5" />
+    <script src="_static/documentation_options.js?v=d050982f"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Reference" href="reference.html" />
+    <link rel="prev" title="Installation" href="installation.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="index.html">
+    <img class="logo" src="_static/pyibl.png" alt="Logo" />
+    
+  </a>
+</p>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="index.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Tutorial</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#a-first-example">A first example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#multiple-agents">Multiple agents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#attributes">Attributes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#partial-matching">Partial matching</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#inspecting-the-model-s-internal-state-and-computations">Inspecting the model’s internal state and computations</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="reference.html">Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="internals.html">Internals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changes.html">Changes</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="installation.html" title="previous chapter">Installation</a></li>
+      <li>Next: <a href="reference.html" title="next chapter">Reference</a></li>
+  </ul></li>
+</ul>
+</div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="tutorial">
+<h1>Tutorial<a class="headerlink" href="#tutorial" title="Link to this heading">¶</a></h1>
+<p id="id1">Likely the easiest way to get started with PyIBL is by looking at some examples of its use.
+While much of what is in this chapter should be understandable even without much knowledge of Python, to
+write your own models you’ll need to know how to write Python code.
+If you are new to Python, a good place to start may be
+the <a class="reference external" href="https://docs.python.org/3.8/tutorial/">Python Tutorial</a>.</p>
+<p>Note that when running the examples below yourself the results may differ in detail because
+IBL models are stochastic.</p>
+<section id="a-first-example">
+<h2>A first example<a class="headerlink" href="#a-first-example" title="Link to this heading">¶</a></h2>
+<p>In the code blocks that follow, lines the user has typed begin with any of the three prompts,</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$
+&gt;&gt;&gt;
+...
+</pre></div>
+</div>
+<p>Other lines are printed by Python or some other command.</p>
+<p>First we launch Python, and make PyIBL available to it. While the output here was
+captured in a Linux distribution and virtual environment in which you launch Python version 3.8 by typing <code class="docutils literal notranslate"><span class="pre">python</span></code>,
+your installation my differ and you may launch it with <code class="docutils literal notranslate"><span class="pre">python3</span></code>, <code class="docutils literal notranslate"><span class="pre">py</span></code>, or something else
+entirely; or start an interactive session in a completely different way using a
+graphical IDE.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ python
+Python 3.10.12 (main, Jun 11 2023, 05:26:28) [GCC 11.4.0] on linux
+Type &quot;help&quot;, &quot;copyright&quot;, &quot;credits&quot; or &quot;license&quot; for more information.
+&gt;&gt;&gt; from pyibl import Agent
+</pre></div>
+</div>
+<p>Next we create an <code class="xref py py-class docutils literal notranslate"><span class="pre">Agent</span></code>, named <code class="docutils literal notranslate"><span class="pre">'My</span> <span class="pre">Agent'</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">Agent</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;My Agent&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span>
+<span class="go">&lt;Agent My Agent 140441174486264&gt;</span>
+</pre></div>
+</div>
+<p>We  have to tell the agent what do if we ask it to choose between options
+it has never previously experienced. One way to do this is to set a default
+by setting the agent’s <code class="xref py py-attr docutils literal notranslate"><span class="pre">Agent.default_utility</span></code> property.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">default_utility</span> <span class="o">=</span> <span class="mf">10.0</span>
+</pre></div>
+</div>
+<p>Now we can ask the agent to choose between two options, that we’ll just describe
+using two strings. When you try this yourself you may get the opposite answer
+as the IBLT theory is stochastic, which is particularly
+obvious in cases like this where there is no reason yet to prefer one answer to the other.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">choose</span><span class="p">([</span><span class="s2">&quot;The Green Button&quot;</span><span class="p">,</span> <span class="s2">&quot;The Red Button&quot;</span><span class="p">])</span>
+<span class="go">&#39;The Green Button&#39;</span>
+</pre></div>
+</div>
+<p>Now return a response to the model. We’ll supply 1.0.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">respond</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Because that value is significantly less than the default utility when we ask
+the agent to make the same choice again, we expect it with high
+probability to pick the other button.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">choose</span><span class="p">([</span><span class="s2">&quot;The Green Button&quot;</span><span class="p">,</span> <span class="s2">&quot;The Red Button&quot;</span><span class="p">])</span>
+<span class="go">&#39;The Red Button&#39;</span>
+</pre></div>
+</div>
+<p>We’ll give it an even lower utility than we did the first one.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">respond</span><span class="p">(</span><span class="o">-</span><span class="mf">2.0</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>If we stick with these responses the model will tend to favor the first button selected.
+Again, your results may differ in detail because of randomness.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">choose</span><span class="p">([</span><span class="s2">&quot;The Green Button&quot;</span><span class="p">,</span> <span class="s2">&quot;The Red Button&quot;</span><span class="p">])</span>
+<span class="go">&#39;The Green Button&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">respond</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">choose</span><span class="p">([</span><span class="s2">&quot;The Green Button&quot;</span><span class="p">,</span> <span class="s2">&quot;The Red Button&quot;</span><span class="p">])</span>
+<span class="go">&#39;The Red Button&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">respond</span><span class="p">(</span><span class="o">-</span><span class="mf">2.0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">choose</span><span class="p">([</span><span class="s2">&quot;The Green Button&quot;</span><span class="p">,</span> <span class="s2">&quot;The Red Button&quot;</span><span class="p">])</span>
+<span class="go">&#39;The Green Button&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">respond</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">choose</span><span class="p">([</span><span class="s2">&quot;The Green Button&quot;</span><span class="p">,</span> <span class="s2">&quot;The Red Button&quot;</span><span class="p">])</span>
+<span class="go">&#39;The Green Button&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">respond</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">choose</span><span class="p">([</span><span class="s2">&quot;The Green Button&quot;</span><span class="p">,</span> <span class="s2">&quot;The Red Button&quot;</span><span class="p">])</span>
+<span class="go">&#39;The Green Button&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">respond</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">choose</span><span class="p">([</span><span class="s2">&quot;The Green Button&quot;</span><span class="p">,</span> <span class="s2">&quot;The Red Button&quot;</span><span class="p">])</span>
+<span class="go">&#39;The Green Button&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">respond</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>But doing this by hand isn’t very useful for modeling.
+Instead, let’s write a function that asks the model to make
+this choice, and automates the reply.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">choose_and_respond</span><span class="p">():</span>
+<span class="gp">... </span>    <span class="n">result</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">choose</span><span class="p">([</span><span class="s2">&quot;The Green Button&quot;</span><span class="p">,</span> <span class="s2">&quot;The Red Button&quot;</span><span class="p">])</span>
+<span class="gp">... </span>    <span class="k">if</span> <span class="n">result</span> <span class="o">==</span> <span class="s2">&quot;The Green Button&quot;</span><span class="p">:</span>
+<span class="gp">... </span>        <span class="n">a</span><span class="o">.</span><span class="n">respond</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="k">else</span><span class="p">:</span>
+<span class="gp">... </span>        <span class="n">a</span><span class="o">.</span><span class="n">respond</span><span class="p">(</span><span class="o">-</span><span class="mf">2.0</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="k">return</span> <span class="n">result</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">choose_and_respond</span><span class="p">()</span>
+<span class="go">&#39;The Green Button&#39;</span>
+</pre></div>
+</div>
+<p>Let’s ask the model to make this choice a thousand times, and see how many
+times it picks each button. But let’s do this from a clean slate. So, before
+we run it, we’ll call <code class="xref py py-meth docutils literal notranslate"><span class="pre">reset()</span></code> to clear the agent’s memory.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">results</span> <span class="o">=</span> <span class="p">{</span> <span class="s2">&quot;The Green Button&quot;</span> <span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;The Red Button&quot;</span> <span class="p">:</span> <span class="mi">0</span> <span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1000</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">results</span><span class="p">[</span><span class="n">choose_and_respond</span><span class="p">()]</span> <span class="o">+=</span> <span class="mi">1</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">results</span>
+<span class="go">{&#39;The Red Button&#39;: 11, &#39;The Green Button&#39;: 989}</span>
+</pre></div>
+</div>
+<p>As we expected the model prefers the green button, but because of randomness, does
+try the red one occasionally.</p>
+<p>Now let’s add some other choices. We’ll make a more complicated function
+that takes a dictionary of choices and the responses they generate,
+and see how they do. This will make use of a bit more Python.
+The default utility is still 10, and so long
+as the responses are well below that we can reasonably expect the first
+few trials to sample them all before favoring those that give the best
+results; but after the model gains more experience, it will favor whatever
+color or colors give the highest rewards.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">choose_and_respond</span><span class="p">(</span><span class="n">choices</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">result</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">choose</span><span class="p">(</span><span class="n">choices</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="n">a</span><span class="o">.</span><span class="n">respond</span><span class="p">(</span><span class="n">responses</span><span class="p">[</span><span class="n">result</span><span class="p">])</span>
+<span class="gp">... </span>    <span class="k">return</span> <span class="n">result</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">responses</span> <span class="o">=</span> <span class="p">{</span> <span class="s2">&quot;green&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">5</span><span class="p">,</span> <span class="s2">&quot;blue&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;yellow&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">4</span><span class="p">,</span>
+<span class="gp">... </span>              <span class="s2">&quot;red&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">6</span><span class="p">,</span> <span class="s2">&quot;violet&quot;</span><span class="p">:</span> <span class="mi">0</span> <span class="p">}</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">choices</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">responses</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">choices</span>
+<span class="go">[&#39;green&#39;, &#39;blue&#39;, &#39;yellow&#39;, &#39;red&#39;, &#39;violet&#39;]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">results</span> <span class="o">=</span> <span class="p">{</span> <span class="n">k</span><span class="p">:</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">choices</span> <span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">results</span>
+<span class="go">{&#39;green&#39;: 0, &#39;blue&#39;: 0, &#39;yellow&#39;: 0, &#39;red&#39;: 0, &#39;violet&#39;: 0}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">results</span><span class="p">[</span><span class="n">choose_and_respond</span><span class="p">(</span><span class="n">choices</span><span class="p">)]</span> <span class="o">+=</span> <span class="mi">1</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">results</span>
+<span class="go">{&#39;green&#39;: 1, &#39;blue&#39;: 1, &#39;yellow&#39;: 1, &#39;red&#39;: 1, &#39;violet&#39;: 1}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">995</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">results</span><span class="p">[</span><span class="n">choose_and_respond</span><span class="p">(</span><span class="n">choices</span><span class="p">)]</span> <span class="o">+=</span> <span class="mi">1</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">results</span>
+<span class="go">{&#39;green&#39;: 10, &#39;blue&#39;: 488, &#39;yellow&#39;: 8, &#39;red&#39;: 8, &#39;violet&#39;: 486}</span>
+</pre></div>
+</div>
+<p>The results are as we expected.</p>
+</section>
+<section id="multiple-agents">
+<h2>Multiple agents<a class="headerlink" href="#multiple-agents" title="Link to this heading">¶</a></h2>
+<p>A PyIBL model is not limited to using just one agent. It can use as many as
+the modeler wishes. For this example we’ll have ten players competing for rewards.
+Each player, at each turn, will pick either <code class="docutils literal notranslate"><span class="pre">'safe'</span></code> or <code class="docutils literal notranslate"><span class="pre">'risky'</span></code>.
+Any player picking <code class="docutils literal notranslate"><span class="pre">'safe'</span></code> will always receive 1 point. All those
+players picking <code class="docutils literal notranslate"><span class="pre">'risky'</span></code> will share 7 points divided evenly between them; if fewer
+than seven players pick <code class="docutils literal notranslate"><span class="pre">'risky'</span></code> those who did will do better than
+if they had picked <code class="docutils literal notranslate"><span class="pre">'safe'</span></code>, but if more than seven players pick <code class="docutils literal notranslate"><span class="pre">'risky'</span></code>
+they will do worse.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pyibl</span> <span class="kn">import</span> <span class="n">Agent</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">agents</span> <span class="o">=</span> <span class="p">[</span> <span class="n">Agent</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">n</span><span class="p">,</span> <span class="n">default_utility</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+<span class="gp">... </span>           <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="s2">&quot;ABCDEFGHIJ&quot;</span> <span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">play_round</span><span class="p">():</span>
+<span class="gp">... </span>    <span class="n">choices</span> <span class="o">=</span> <span class="p">[</span> <span class="n">a</span><span class="o">.</span><span class="n">choose</span><span class="p">([</span><span class="s1">&#39;safe&#39;</span><span class="p">,</span> <span class="s1">&#39;risky&#39;</span><span class="p">])</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">agents</span> <span class="p">]</span>
+<span class="gp">... </span>    <span class="n">risky</span> <span class="o">=</span> <span class="p">[</span> <span class="n">a</span> <span class="k">for</span> <span class="n">a</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">agents</span><span class="p">,</span> <span class="n">choices</span><span class="p">)</span> <span class="k">if</span> <span class="n">c</span> <span class="o">==</span> <span class="s1">&#39;risky&#39;</span> <span class="p">]</span>
+<span class="gp">... </span>    <span class="n">reward</span> <span class="o">=</span> <span class="mi">7</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">risky</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">agents</span><span class="p">:</span>
+<span class="gp">... </span>        <span class="k">if</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">risky</span><span class="p">:</span>
+<span class="gp">... </span>            <span class="n">a</span><span class="o">.</span><span class="n">respond</span><span class="p">(</span><span class="n">reward</span><span class="p">)</span>
+<span class="gp">... </span>        <span class="k">else</span><span class="p">:</span>
+<span class="gp">... </span>            <span class="n">a</span><span class="o">.</span><span class="n">respond</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="k">return</span> <span class="p">(</span><span class="n">reward</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span> <span class="n">a</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">risky</span> <span class="p">]))</span>
+</pre></div>
+</div>
+<p>Here’s what running it for ten rounds looks like.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="n">play_round</span><span class="p">())</span>
+<span class="gp">...</span>
+<span class="go">(1.4, &#39;BDFHI&#39;)</span>
+<span class="go">(1.4, &#39;ACEGJ&#39;)</span>
+<span class="go">(1.75, &#39;DFGI&#39;)</span>
+<span class="go">(1.4, &#39;BDEHJ&#39;)</span>
+<span class="go">(0.875, &#39;ABCEFGHI&#39;)</span>
+<span class="go">(0.7777777777777778, &#39;ABCDFGHIJ&#39;)</span>
+<span class="go">(1.4, &#39;ACEFG&#39;)</span>
+<span class="go">(1.75, &#39;BHIJ&#39;)</span>
+<span class="go">(1.0, &#39;ACDEGHJ&#39;)</span>
+</pre></div>
+</div>
+<p>By just looking at a small sample of runs we can’t really discern any
+interesting patterns. Instead we’ll write a function that runs the
+agents many times, and gathers some statistics. We’ll work out how
+many agents pick risky, on average, by counting the length of the
+second value returned by <code class="docutils literal notranslate"><span class="pre">play_round()</span></code>; how many times each of the
+agents picked risky; and what the aggregate payoff was to each agent.
+And then run it for 1,000 rounds.</p>
+<p>Note that before running it we get a clean slate by calling each agent’s
+<code class="docutils literal notranslate"><span class="pre">reset</span></code> method. And for the payoffs we round the results to one decimal
+place, as Python by default would be showing them to about 16 decimal
+places, and we don’t need that kind of precision.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">statistics</span> <span class="kn">import</span> <span class="n">mean</span><span class="p">,</span> <span class="n">median</span><span class="p">,</span> <span class="n">mode</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">count</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">run_agents</span><span class="p">(</span><span class="n">rounds</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">agents</span><span class="p">:</span>
+<span class="gp">... </span>        <span class="n">a</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+<span class="gp">... </span>    <span class="n">by_round</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="gp">... </span>    <span class="n">by_agent</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">agents</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="n">agent_payoffs</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">agents</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">rounds</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="n">payoff</span><span class="p">,</span> <span class="n">chose_risky</span> <span class="o">=</span> <span class="n">play_round</span><span class="p">()</span>
+<span class="gp">... </span>        <span class="n">by_round</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">chose_risky</span><span class="p">))</span>
+<span class="gp">... </span>        <span class="k">for</span> <span class="n">a</span><span class="p">,</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">agents</span><span class="p">,</span> <span class="n">count</span><span class="p">()):</span>
+<span class="gp">... </span>            <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">chose_risky</span><span class="p">:</span>
+<span class="gp">... </span>                <span class="n">by_agent</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+<span class="gp">... </span>                <span class="n">agent_payoffs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="n">payoff</span>
+<span class="gp">... </span>            <span class="k">else</span><span class="p">:</span>
+<span class="gp">... </span>                <span class="n">agent_payoffs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="n">mean</span><span class="p">(</span><span class="n">by_round</span><span class="p">),</span> <span class="n">median</span><span class="p">(</span><span class="n">by_round</span><span class="p">),</span> <span class="n">mode</span><span class="p">(</span><span class="n">by_round</span><span class="p">))</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="n">by_agent</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">([</span><span class="nb">float</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">p</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">agent_payoffs</span><span class="p">])</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">run_agents</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span>
+<span class="go">6.408 7.0 7</span>
+<span class="go">[856, 283, 681, 851, 313, 230, 874, 706, 820, 794]</span>
+<span class="go">[1106.2, 1001.0, 1056.5, 1097.7, 1004.9, 1001.8, 1102.2, 1052.7, 1092.1, 1076.9]</span>
+</pre></div>
+</div>
+<p>Note that this time when we ran it seven of the agents chose risky over two thirds of the
+time, but three, b, e and f, chose it less than one third of the time, but all received
+about the same reward over the course of 1,000 rounds, just a little better than
+if they’d all always chosen safe.</p>
+<p>Let’s run it for a few more 1,000 round blocks.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">run_agents</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span>
+<span class="go">6.483 6.0 6</span>
+<span class="go">[335, 884, 630, 472, 165, 875, 857, 706, 886, 673]</span>
+<span class="go">[1007.9, 1091.8, 1029.9, 1007.6, 1000.2, 1100.9, 1080.3, 1051.5, 1103.7, 1043.2]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">run_agents</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span>
+<span class="go">6.476 7.0 7</span>
+<span class="go">[323, 318, 267, 299, 888, 847, 834, 902, 912, 886]</span>
+<span class="go">[1005.1, 1003.8, 1001.4, 1001.0, 1088.2, 1078.6, 1063.1, 1094.0, 1098.0, 1090.7]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">run_agents</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span>
+<span class="go">6.455 6.0 6</span>
+<span class="go">[525, 572, 716, 558, 666, 707, 828, 641, 502, 740]</span>
+<span class="go">[1031.6, 1030.3, 1067.6, 1034.4, 1051.9, 1075.7, 1112.5, 1048.9, 1026.9, 1065.3]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">run_agents</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span>
+<span class="go">6.408 7.0 7</span>
+<span class="go">[856, 283, 681, 851, 313, 230, 874, 706, 820, 794]</span>
+<span class="go">[1106.2, 1001.0, 1056.5, 1097.7, 1004.9, 1001.8, 1102.2, 1052.7, 1092.1, 1076.9]</span>
+</pre></div>
+</div>
+<p>We see that a similar pattern holds, with a majority of the agents, when seen
+over the full 1,000 rounds, having largely favored a risky
+strategy, but a minority, again over the full 1,000 rounds, having favored a safe strategy.
+But which agents these are, of course, varies from block to block; and, perhaps, if we
+looked at more local sequences of decisions, we might see individual agent’s strategies
+shifting over time.</p>
+</section>
+<section id="attributes">
+<h2>Attributes<a class="headerlink" href="#attributes" title="Link to this heading">¶</a></h2>
+<p>The choices an agent decides between are not limited to atomic entities
+as we’ve used in the above. They can be structured using “attributes.”
+Such attributes need to be declared when the agent is created.</p>
+<p>As a concrete example, we’ll have our agent decide which of two buttons,
+<code class="docutils literal notranslate"><span class="pre">'left'</span></code> or <code class="docutils literal notranslate"><span class="pre">'right'</span></code>, to push. But one of these buttons will be
+illuminated. Which is illuminated at any time is decided randomly, with
+even chances for either. Pushing the left button earns a base reward of
+1, and the right button of 2; but when a button is illuminated its reward
+is doubled.</p>
+<p>We’ll define our agent to have two attributes, <code class="docutils literal notranslate"><span class="pre">&quot;button&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">&quot;illuminatted&quot;</span></code>.
+The first is which button, and the second is whether or not that button is illumiunated.
+In this example the the <code class="docutils literal notranslate"><span class="pre">&quot;button&quot;</span></code> value is the decision to be made, and
+<code class="docutils literal notranslate"><span class="pre">&quot;illuminatted&quot;</span></code> value represents the context, or situation, in which this decision is being made.</p>
+<p>We’ll start by creating an agent, and two choices, one for each button.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pyibl</span> <span class="kn">import</span> <span class="n">Agent</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">random</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">Agent</span><span class="p">([</span><span class="s2">&quot;button&quot;</span><span class="p">,</span> <span class="s2">&quot;illuminated&quot;</span><span class="p">],</span> <span class="n">default_utility</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">left</span> <span class="o">=</span> <span class="p">{</span> <span class="s2">&quot;button&quot;</span><span class="p">:</span> <span class="s2">&quot;left&quot;</span><span class="p">,</span> <span class="s2">&quot;illuminated&quot;</span><span class="p">:</span> <span class="kc">False</span> <span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">right</span> <span class="o">=</span> <span class="p">{</span> <span class="s2">&quot;button&quot;</span><span class="p">:</span> <span class="s2">&quot;right&quot;</span><span class="p">,</span> <span class="s2">&quot;illuminated&quot;</span><span class="p">:</span> <span class="kc">False</span> <span class="p">}</span>
+</pre></div>
+</div>
+<p>While we’ve created them both with the button un-illuminated, the code
+that actually runs the experiment will turn one of them on, randomly.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">push_button</span><span class="p">():</span>
+<span class="gp">... </span>    <span class="k">if</span> <span class="n">random</span><span class="p">()</span> <span class="o">&lt;=</span> <span class="mf">0.5</span><span class="p">:</span>
+<span class="gp">... </span>        <span class="n">left</span><span class="p">[</span><span class="s2">&quot;illuminated&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="gp">... </span>    <span class="k">else</span><span class="p">:</span>
+<span class="gp">... </span>        <span class="n">left</span><span class="p">[</span><span class="s2">&quot;illuminated&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="gp">... </span>    <span class="n">right</span><span class="p">[</span><span class="s2">&quot;illuminated&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">left</span><span class="p">[</span><span class="s2">&quot;illuminated&quot;</span><span class="p">]</span>
+<span class="gp">... </span>    <span class="n">result</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">choose</span><span class="p">([</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">])</span>
+<span class="gp">... </span>    <span class="n">reward</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;button&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;left&quot;</span> <span class="k">else</span> <span class="mi">2</span>
+<span class="gp">... </span>    <span class="k">if</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;illuminated&quot;</span><span class="p">]:</span>
+<span class="gp">... </span>        <span class="n">reward</span> <span class="o">*=</span> <span class="mi">2</span>
+<span class="gp">... </span>    <span class="n">a</span><span class="o">.</span><span class="n">respond</span><span class="p">(</span><span class="n">reward</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="k">return</span> <span class="n">result</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">push_button</span><span class="p">()</span>
+<span class="go">{&#39;button&#39;: &#39;right&#39;, &#39;illuminated&#39;: True}</span>
+</pre></div>
+</div>
+<p>Now we’ll <code class="docutils literal notranslate"><span class="pre">reset</span></code> the agent, and then run it 2,000 times, counting how many times each button
+is picked, and how many times an illuminated button is picked.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">results</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;left&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;right&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="kc">True</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="kc">False</span><span class="p">:</span> <span class="mi">0</span><span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2000</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">result</span> <span class="o">=</span> <span class="n">push_button</span><span class="p">()</span>
+<span class="gp">... </span>    <span class="n">results</span><span class="p">[</span><span class="n">result</span><span class="p">[</span><span class="s2">&quot;button&quot;</span><span class="p">]]</span> <span class="o">+=</span> <span class="mi">1</span>
+<span class="gp">... </span>    <span class="n">results</span><span class="p">[</span><span class="n">result</span><span class="p">[</span><span class="s2">&quot;illuminated&quot;</span><span class="p">]]</span> <span class="o">+=</span> <span class="mi">1</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">results</span>
+<span class="go">{&#39;left&#39;: 518, &#39;right&#39;: 1482, True: 1483, False: 517}</span>
+</pre></div>
+</div>
+<p>As we might have expected the right button is favored, as are illuminated ones, but
+since an illuminated left is as good as a non-illuminated right neither completely
+dominates.</p>
+</section>
+<section id="partial-matching">
+<h2>Partial matching<a class="headerlink" href="#partial-matching" title="Link to this heading">¶</a></h2>
+<p>In the previous examples experience from prior experiences only
+applied if the prior decisions, or their contexts, matched exactly the
+ones being considered for the current choice. But often we want to
+choose the option that most closely matches, though not necessarily
+exactly, for some definition of “closely.” To do this we define a
+similarity function for those attributes we want to partially match,
+and specify a <code class="docutils literal notranslate"><span class="pre">mismatch_penalty</span></code> parameter.</p>
+<p>In this example there will be a continuous function, <code class="docutils literal notranslate"><span class="pre">f()</span></code>, that maps
+a number between zero and one to a reward value. At each round the model
+will be passed five random numbers between zero and one, and be asked to
+select the one that it expects will give the greatest reward. We’ll start
+by defining an agent that expects choices to have a single attribute, <code class="docutils literal notranslate"><span class="pre">n</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pyibl</span> <span class="kn">import</span> <span class="n">Agent</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">random</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">math</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">sys</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">Agent</span><span class="p">([</span><span class="s2">&quot;n&quot;</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>We’ll define a similarity function for that attribute, a function of two variables, two different values
+of the attribute to be compared. When the attribute
+values are the same the value should be 1, and when they are maximally
+dissimilar, 0. The similarity function we’re supplying is scaled linearly, and its
+value ranges from 0, if one of its arguments is 1 and the other is 0, and otherwise scales up
+to 1 when they are equal. So, for example, 0.31 and 0.32 have a large similarity, 0.99, but
+0.11 and 0.93 have a small similarity, 0.18.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">similarity</span><span class="p">([</span><span class="s2">&quot;n&quot;</span><span class="p">],</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="mi">1</span> <span class="o">-</span> <span class="nb">abs</span><span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">y</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>The <code class="xref py py-attr docutils literal notranslate"><span class="pre">mismatch_penalty</span></code> is a non-negative number that says how much to
+penalize past experiences for poor matches to the options currently
+under consideration. The larger its value, the more mismatches
+are penalized. We’ll experiment with different values of the <code class="docutils literal notranslate"><span class="pre">mismatch_penalty</span></code>
+in our model</p>
+<p>Let’s define a function that will run our model, with the number of
+iterations, the <code class="docutils literal notranslate"><span class="pre">mismatch_penalty</span></code>, and the reward function supplied as parameters.
+Note that we reset the agent at the beginning of this function.
+We then supply one starting datum for the model to use, the value of the reward
+function when applied to zero. After asking the agent to choose one of five,
+randomly assigned values, our <code class="docutils literal notranslate"><span class="pre">run_model</span></code> function will work out which would have
+given the highest reward, and keep track of how often the model did make that choice.
+We’ll round that fraction of correct choices made down to two decimal places to
+make sure it is displayed nicely.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">run_model</span><span class="p">(</span><span class="n">trials</span><span class="p">,</span> <span class="n">mismatch</span><span class="p">,</span> <span class="n">f</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">a</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+<span class="gp">... </span>    <span class="n">a</span><span class="o">.</span><span class="n">mismatch_penalty</span> <span class="o">=</span> <span class="n">mismatch</span>
+<span class="gp">... </span>    <span class="n">a</span><span class="o">.</span><span class="n">populate</span><span class="p">([{</span><span class="s2">&quot;n&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">}],</span> <span class="n">f</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
+<span class="gp">... </span>    <span class="n">number_correct</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="gp">... </span>    <span class="n">fraction_correct</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="gp">... </span>    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">trials</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="n">options</span> <span class="o">=</span> <span class="p">[</span> <span class="p">{</span><span class="s2">&quot;n&quot;</span><span class="p">:</span> <span class="n">random</span><span class="p">()}</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span> <span class="p">]</span>
+<span class="gp">... </span>        <span class="n">choice</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">choose</span><span class="p">(</span><span class="n">options</span><span class="p">)</span>
+<span class="gp">... </span>        <span class="n">best</span> <span class="o">=</span> <span class="o">-</span><span class="n">sys</span><span class="o">.</span><span class="n">float_info</span><span class="o">.</span><span class="n">max</span>
+<span class="gp">... </span>        <span class="n">best_choice</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="gp">... </span>        <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">options</span><span class="p">:</span>
+<span class="gp">... </span>            <span class="n">v</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">o</span><span class="p">[</span><span class="s2">&quot;n&quot;</span><span class="p">])</span>
+<span class="gp">... </span>            <span class="k">if</span> <span class="n">o</span> <span class="o">==</span> <span class="n">choice</span><span class="p">:</span>
+<span class="gp">... </span>                <span class="n">a</span><span class="o">.</span><span class="n">respond</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+<span class="gp">... </span>            <span class="k">if</span> <span class="n">v</span> <span class="o">&gt;</span> <span class="n">best</span><span class="p">:</span>
+<span class="gp">... </span>                <span class="n">best</span> <span class="o">=</span> <span class="n">v</span>
+<span class="gp">... </span>                <span class="n">best_choice</span> <span class="o">=</span> <span class="n">o</span>
+<span class="gp">... </span>        <span class="k">if</span> <span class="n">choice</span> <span class="o">==</span> <span class="n">best_choice</span><span class="p">:</span>
+<span class="gp">... </span>            <span class="n">number_correct</span> <span class="o">+=</span> <span class="mi">1</span>
+<span class="gp">... </span>        <span class="n">fraction_correct</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">number_correct</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="p">(</span><span class="n">t</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">))</span>
+<span class="gp">... </span>    <span class="k">return</span> <span class="n">fraction_correct</span>
+</pre></div>
+</div>
+<p>For our reward function we’ll define a quadratic function that has a single peak of value 5 when called on 0.72, and
+drops off on either side, down to 2.4 when called on 0 and down to 4.6 when called on 1.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+<span class="gp">... </span>   <span class="k">return</span> <span class="mi">5</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">math</span><span class="o">.</span><span class="n">pow</span><span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="mf">0.72</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Let’s first run it with a mismatch penalty of zero, which means all values
+will be considered equally good, and the result will simply be random guessing.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">run_model</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+<span class="go">[0.0, 0.0, 0.0, 0.25, 0.2, 0.17, 0.14, 0.25, 0.22, 0.2, 0.18,</span>
+<span class="go"> 0.25, 0.31, 0.29, 0.27, 0.31, 0.29, 0.28, 0.26, 0.25, 0.24, 0.23,</span>
+<span class="go"> 0.22, 0.21, 0.2, 0.19, 0.19, 0.18, 0.17, 0.2, 0.19, 0.19, 0.18,</span>
+<span class="go"> 0.18, 0.17, 0.17, 0.19, 0.18, 0.18, 0.17, 0.17, 0.17, 0.16, 0.16,</span>
+<span class="go"> 0.16, 0.15, 0.15, 0.15, 0.14, 0.14, 0.14, 0.13, 0.13, 0.13, 0.13,</span>
+<span class="go"> 0.12, 0.14, 0.16, 0.15, 0.15, 0.15, 0.15, 0.16, 0.16, 0.15, 0.17,</span>
+<span class="go"> 0.16, 0.16, 0.16, 0.16, 0.17, 0.17, 0.16, 0.16, 0.17, 0.17, 0.17,</span>
+<span class="go"> 0.18, 0.18, 0.19, 0.19, 0.18, 0.18, 0.19, 0.19, 0.19, 0.18, 0.18,</span>
+<span class="go"> 0.18, 0.18, 0.19, 0.18, 0.18, 0.18, 0.19, 0.2, 0.2, 0.2, 0.2, 0.2]</span>
+</pre></div>
+</div>
+<p>As we can see, it looks like random guessing, getting things right only about 20% of the time.</p>
+<p>Now let’s try it with a mismatch penalty of 1, which won’t pay too much attention to
+how closely the values match those we’ve seen before, but will pay a little bit of attention to it.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">run_model</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+<span class="go">[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.14, 0.12, 0.11, 0.1, 0.18, 0.25,</span>
+<span class="go"> 0.31, 0.29, 0.27, 0.31, 0.29, 0.33, 0.32, 0.3, 0.29, 0.32, 0.35,</span>
+<span class="go"> 0.33, 0.36, 0.35, 0.37, 0.36, 0.34, 0.33, 0.35, 0.34, 0.33, 0.32,</span>
+<span class="go"> 0.34, 0.36, 0.35, 0.34, 0.36, 0.35, 0.37, 0.36, 0.35, 0.34, 0.36,</span>
+<span class="go"> 0.37, 0.36, 0.35, 0.37, 0.36, 0.35, 0.37, 0.38, 0.39, 0.4, 0.41,</span>
+<span class="go"> 0.4, 0.41, 0.41, 0.4, 0.39, 0.4, 0.41, 0.41, 0.42, 0.42, 0.42,</span>
+<span class="go"> 0.43, 0.42, 0.41, 0.42, 0.42, 0.42, 0.42, 0.41, 0.42, 0.42, 0.41,</span>
+<span class="go"> 0.41, 0.41, 0.41, 0.4, 0.4, 0.4, 0.41, 0.41, 0.4, 0.4, 0.39, 0.39,</span>
+<span class="go"> 0.4, 0.4, 0.4, 0.4, 0.41, 0.42, 0.41, 0.42, 0.41, 0.42]</span>
+</pre></div>
+</div>
+<p>While it started out guessing, since it had only minimal information, as it
+learns more the model does much better, reaching correct answers about 40% of the time,
+twice as good a random.</p>
+<p>If we use a much larger mismatch penalty, 30, we’ll see an even greater improvement,
+converging on being correct about 90% of the time.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">run_model</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+<span class="go">[0.0, 0.0, 0.33, 0.5, 0.6, 0.5, 0.57, 0.62, 0.67, 0.6, 0.55, 0.58,</span>
+<span class="go"> 0.62, 0.64, 0.6, 0.62, 0.65, 0.67, 0.68, 0.7, 0.71, 0.68, 0.7,</span>
+<span class="go"> 0.71, 0.72, 0.73, 0.74, 0.75, 0.76, 0.77, 0.77, 0.78, 0.79, 0.79,</span>
+<span class="go"> 0.8, 0.81, 0.81, 0.82, 0.82, 0.82, 0.83, 0.83, 0.84, 0.84, 0.84,</span>
+<span class="go"> 0.85, 0.85, 0.85, 0.86, 0.86, 0.86, 0.87, 0.87, 0.87, 0.87, 0.88,</span>
+<span class="go"> 0.88, 0.88, 0.88, 0.88, 0.89, 0.89, 0.89, 0.89, 0.89, 0.89, 0.9,</span>
+<span class="go"> 0.9, 0.88, 0.89, 0.89, 0.89, 0.89, 0.89, 0.89, 0.89, 0.9, 0.9,</span>
+<span class="go"> 0.9, 0.9, 0.9, 0.89, 0.89, 0.89, 0.89, 0.9, 0.9, 0.9, 0.9, 0.9,</span>
+<span class="go"> 0.9, 0.9, 0.9, 0.9, 0.91, 0.9, 0.9, 0.9, 0.9, 0.9]</span>
+</pre></div>
+</div>
+</section>
+<section id="inspecting-the-model-s-internal-state-and-computations">
+<h2>Inspecting the model’s internal state and computations<a class="headerlink" href="#inspecting-the-model-s-internal-state-and-computations" title="Link to this heading">¶</a></h2>
+<p>Sometimes, possibly for debugging, possibly for writing detailed log files,
+and possibly for making unusual models, we want to be able to see what’s
+going on inside PyIBL. Several tools are provided to facilitate this.</p>
+<p>The <code class="xref py py-meth docutils literal notranslate"><span class="pre">instances()</span></code> method show’s all instances currently in an agent’s memory.</p>
+<p>Consider this simple, binary choice model, that selects between a safe choice,
+always returning 1, and a risky choice which returns 2 fifty percent of the time,
+and 0 otherwise.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">Agent</span><span class="p">(</span><span class="n">default_utility</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">run_once</span><span class="p">():</span>
+<span class="gp">... </span>    <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">choose</span><span class="p">([</span><span class="s2">&quot;safe&quot;</span><span class="p">,</span> <span class="s2">&quot;risky&quot;</span><span class="p">])</span> <span class="o">==</span> <span class="s2">&quot;safe&quot;</span><span class="p">:</span>
+<span class="gp">... </span>        <span class="n">a</span><span class="o">.</span><span class="n">respond</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="k">elif</span> <span class="n">random</span><span class="p">()</span> <span class="o">&lt;=</span> <span class="mf">0.5</span><span class="p">:</span>
+<span class="gp">... </span>        <span class="n">a</span><span class="o">.</span><span class="n">respond</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="k">else</span><span class="p">:</span>
+<span class="gp">... </span>        <span class="n">a</span><span class="o">.</span><span class="n">respond</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>If we run it once, and then look at its memory we see three instances, two
+that were created using the <code class="docutils literal notranslate"><span class="pre">default_utility</span></code>, and one actually experienced.
+As usual, if you run this yourself, it may differ in detail since PyIBL models
+are stochastic.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">run_once</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">instances</span><span class="p">()</span>
+<span class="go">+----------+---------+---------+-------------+</span>
+<span class="go">| decision | outcome | created | occurrences |</span>
+<span class="go">+----------+---------+---------+-------------+</span>
+<span class="go">|   safe   |    20   |    0    |     [0]     |</span>
+<span class="go">|  risky   |    20   |    0    |     [0]     |</span>
+<span class="go">|  risky   |    2    |    1    |     [1]     |</span>
+<span class="go">+----------+---------+---------+-------------+</span>
+</pre></div>
+</div>
+<p>Let’s run it ten more times and look again.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">run_once</span><span class="p">()</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">instances</span><span class="p">()</span>
+<span class="go">+----------+---------+---------+------------------+</span>
+<span class="go">| decision | outcome | created |   occurrences    |</span>
+<span class="go">+----------+---------+---------+------------------+</span>
+<span class="go">|   safe   |    20   |    0    |       [0]        |</span>
+<span class="go">|  risky   |    20   |    0    |       [0]        |</span>
+<span class="go">|  risky   |    0    |    1    |    [1, 8, 10]    |</span>
+<span class="go">|   safe   |    1    |    2    | [2, 5, 7, 9, 11] |</span>
+<span class="go">|  risky   |    2    |    3    |    [3, 4, 6]     |</span>
+<span class="go">+----------+---------+---------+------------------+</span>
+</pre></div>
+</div>
+<p>There are now five different instances, but all the actually
+experienced ones have been reinforced two or more times.</p>
+<p>If we want to see how PyIBL uses these values when computing a next
+iteration we can turn on tracing in the agent.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">trace</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">run_once</span><span class="p">()</span>
+
+<span class="go">safe → 1.6981119704016256</span>
+<span class="go">+------+----------+---------+------------------+---------+---------------------+----------------------+---------------------+-----------------------+</span>
+<span class="go">|  id  | decision | created |   occurrences    | outcome |   base activation   |   activation noise   |   total activation  | retrieval probability |</span>
+<span class="go">+------+----------+---------+------------------+---------+---------------------+----------------------+---------------------+-----------------------+</span>
+<span class="go">| 0132 |   safe   |    0    |       [0]        |    20   | -1.2424533248940002 |  0.6743933445745868  | -0.5680599803194134 |  0.036742735284296085 |</span>
+<span class="go">| 0135 |   safe   |    2    | [2, 5, 7, 9, 11] |    1    |  1.0001744608971734 | -0.41339471775300435 |  0.586779743144169  |   0.9632572647157039  |</span>
+<span class="go">+------+----------+---------+------------------+---------+---------------------+----------------------+---------------------+-----------------------+</span>
+
+<span class="go">risky → 0.23150913644216178</span>
+<span class="go">+------+----------+---------+-------------+---------+---------------------+----------------------+---------------------+-----------------------+</span>
+<span class="go">|  id  | decision | created | occurrences | outcome |   base activation   |   activation noise   |   total activation  | retrieval probability |</span>
+<span class="go">+------+----------+---------+-------------+---------+---------------------+----------------------+---------------------+-----------------------+</span>
+<span class="go">| 0133 |  risky   |    0    |     [0]     |    20   | -1.2424533248940002 | -0.2948777661505001  | -1.5373310910445004 | 0.0009256525969768487 |</span>
+<span class="go">| 0134 |  risky   |    1    |  [1, 8, 10] |    0    |  0.4111940833223344 | 0.48087038114494485  |  0.8920644644672793 |   0.8925763051517108  |</span>
+<span class="go">| 0136 |  risky   |    3    |  [3, 4, 6]  |    2    | 0.09087765648075839 | 0.049537460190590174 | 0.14041511667134857 |   0.1064980422513124  |</span>
+<span class="go">+------+----------+---------+-------------+---------+---------------------+----------------------+---------------------+-----------------------+</span>
+</pre></div>
+</div>
+<p>From this we see PyIBL computing blended values for the two options,
+safe and risky, of 1.6981 and 0.2315, respectively. For the former, it
+computed the activation of two relevant chunks, resulting in retrieval
+probabilities it used to combine the possible outcomes of 20 and 1,
+though heavily discounting the former because it’s activation is so
+low, because of decay. Similarly for the risky choice, though with
+three instances reflecting three outcomes in the agent’s memory.</p>
+<p>To gain programmatic access to this data we can use the <code class="xref py py-attr docutils literal notranslate"><span class="pre">details</span></code> of an agent.
+Here we run the model one more time and print the result details.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pprint</span> <span class="kn">import</span> <span class="n">pp</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">trace</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">details</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">run_once</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pp</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">details</span><span class="p">)</span>
+<span class="go">[[{&#39;decision&#39;: &#39;safe&#39;,</span>
+<span class="go">   &#39;activations&#39;: [{&#39;name&#39;: &#39;0132&#39;,</span>
+<span class="go">                    &#39;creation_time&#39;: 0,</span>
+<span class="go">                    &#39;attributes&#39;: ((&#39;_utility&#39;, 20), (&#39;_decision&#39;, &#39;safe&#39;)),</span>
+<span class="go">                    &#39;reference_count&#39;: 1,</span>
+<span class="go">                    &#39;references&#39;: [0],</span>
+<span class="go">                    &#39;base_level_activation&#39;: -1.2824746787307684,</span>
+<span class="go">                    &#39;activation_noise&#39;: 0.2343700698730416,</span>
+<span class="go">                    &#39;activation&#39;: -1.0481046088577268,</span>
+<span class="go">                    &#39;retrieval_probability&#39;: 0.0010536046644722481},</span>
+<span class="go">                   {&#39;name&#39;: &#39;0135&#39;,</span>
+<span class="go">                    &#39;creation_time&#39;: 2,</span>
+<span class="go">                    &#39;attributes&#39;: ((&#39;_utility&#39;, 1), (&#39;_decision&#39;, &#39;safe&#39;)),</span>
+<span class="go">                    &#39;reference_count&#39;: 6,</span>
+<span class="go">                    &#39;references&#39;: [2, 5, 7, 9, 11, 12],</span>
+<span class="go">                    &#39;base_level_activation&#39;: 1.184918357959952,</span>
+<span class="go">                    &#39;activation_noise&#39;: 0.1904030286066936,</span>
+<span class="go">                    &#39;activation&#39;: 1.3753213865666456,</span>
+<span class="go">                    &#39;retrieval_probability&#39;: 0.9989463953355276}],</span>
+<span class="go">   &#39;blended&#39;: 1.0200184886249728},</span>
+<span class="go">  {&#39;decision&#39;: &#39;risky&#39;,</span>
+<span class="go">   &#39;activations&#39;: [{&#39;name&#39;: &#39;0133&#39;,</span>
+<span class="go">                    &#39;creation_time&#39;: 0,</span>
+<span class="go">                    &#39;attributes&#39;: ((&#39;_utility&#39;, 20), (&#39;_decision&#39;, &#39;risky&#39;)),</span>
+<span class="go">                    &#39;reference_count&#39;: 1,</span>
+<span class="go">                    &#39;references&#39;: [0],</span>
+<span class="go">                    &#39;base_level_activation&#39;: -1.2824746787307684,</span>
+<span class="go">                    &#39;activation_noise&#39;: -0.04867278847092464,</span>
+<span class="go">                    &#39;activation&#39;: -1.331147467201693,</span>
+<span class="go">                    &#39;retrieval_probability&#39;: 0.006544349628104761},</span>
+<span class="go">                   {&#39;name&#39;: &#39;0134&#39;,</span>
+<span class="go">                    &#39;creation_time&#39;: 1,</span>
+<span class="go">                    &#39;attributes&#39;: ((&#39;_utility&#39;, 0), (&#39;_decision&#39;, &#39;risky&#39;)),</span>
+<span class="go">                    &#39;reference_count&#39;: 3,</span>
+<span class="go">                    &#39;references&#39;: [1, 8, 10],</span>
+<span class="go">                    &#39;base_level_activation&#39;: 0.2724966041059383,</span>
+<span class="go">                    &#39;activation_noise&#39;: 0.16088543930698337,</span>
+<span class="go">                    &#39;activation&#39;: 0.43338204341292164,</span>
+<span class="go">                    &#39;retrieval_probability&#39;: 0.9624144271846764},</span>
+<span class="go">                   {&#39;name&#39;: &#39;0136&#39;,</span>
+<span class="go">                    &#39;creation_time&#39;: 3,</span>
+<span class="go">                    &#39;attributes&#39;: ((&#39;_utility&#39;, 2), (&#39;_decision&#39;, &#39;risky&#39;)),</span>
+<span class="go">                    &#39;reference_count&#39;: 3,</span>
+<span class="go">                    &#39;references&#39;: [3, 4, 6],</span>
+<span class="go">                    &#39;base_level_activation&#39;: 0.027153555019573457,</span>
+<span class="go">                    &#39;activation_noise&#39;: -0.8079194823991546,</span>
+<span class="go">                    &#39;activation&#39;: -0.7807659273795811,</span>
+<span class="go">                    &#39;retrieval_probability&#39;: 0.03104122318721878}],</span>
+<span class="go">   &#39;blended&#39;: 0.1929694389365328}]]</span>
+</pre></div>
+</div>
+<p>We could use this information, for example, to write detailed log
+files of many iterations of our model while it runs over thousands of
+iterations.</p>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &#169;2014-2024 Carnegie Mellon University.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.3.7</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
+      
+      |
+      <a href="_sources/tutorial.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

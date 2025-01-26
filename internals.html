@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Internals &#8212; PyIBL 5.1.6 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d1102ebc" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=a66d8bb5" />
+    <script src="_static/documentation_options.js?v=d050982f"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Examples" href="examples.html" />
+    <link rel="prev" title="Reference" href="reference.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="index.html">
+    <img class="logo" src="_static/pyibl.png" alt="Logo" />
+    
+  </a>
+</p>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="index.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reference.html">Reference</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Internals</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#activation">Activation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#base-level-activation">Base-level activation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#partial-matching">Partial Matching</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#activation-noise">Activation noise</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#blending">Blending</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changes.html">Changes</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="reference.html" title="previous chapter">Reference</a></li>
+      <li>Next: <a href="examples.html" title="next chapter">Examples</a></li>
+  </ul></li>
+</ul>
+</div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="internals">
+<h1>Internals<a class="headerlink" href="#internals" title="Link to this heading">¶</a></h1>
+<p id="id1">PyIBL is built on top of <a class="reference external" href="http://halle.psy.cmu.edu/pyactup/">PyACTUp</a>, a Python implementation of
+a portion of <a class="reference external" href="http://act-r.psy.cmu.edu/">ACT-R</a>’s declarative memory. This chapter describes the computations
+underlying decisions made by PyIBL, which are mostly carried out in the underlying PyACTUp code.</p>
+<p>The fundamental unit of memory in PyIBL is an instance (a “chunk” in PyACTUp), which combines the
+attributes of a choice with the result it led to, along with timing data.</p>
+<section id="activation">
+<h2>Activation<a class="headerlink" href="#activation" title="Link to this heading">¶</a></h2>
+<p>A fundamental part of retrieving an instance from an agent’s memory is computing the activation of that instance,
+a real number describing
+how likely it is to be recalled, based on how frequently and recently it has been experienced by the <code class="xref py py-class docutils literal notranslate"><span class="pre">Agent</span></code>, and how well it
+matches the attributes of what is to be retrieved.</p>
+<p>The activation, <img class="math" src="_images/math/b073e22df2a1a138c1c7417aed232116ec81fc9c.png" alt="A_{i}(t)"/> of instance <em>i</em> at time <em>t</em> is a sum of three
+components,</p>
+<blockquote>
+<div><div class="math">
+<p><img src="_images/math/d92d55b59452d891342dbcfdccfc581c57f48545.png" alt="A_{i}(t) = B_{i}(t) + M_{i} + \epsilon"/></p>
+</div></div></blockquote>
+<p>the base-level activation, the partial matching correction, and the activation noise.</p>
+<section id="base-level-activation">
+<h3>Base-level activation<a class="headerlink" href="#base-level-activation" title="Link to this heading">¶</a></h3>
+<p>The base-level activation, <img class="math" src="_images/math/88023df4615dc740ff5bd5daca491464d21b1598.png" alt="B_{i}(t)"/>, describes the frequency and recency of the instance <em>i</em>,
+and depends upon the <code class="xref py py-attr docutils literal notranslate"><span class="pre">decay</span></code> parameter of the <code class="xref py py-class docutils literal notranslate"><span class="pre">Agent</span></code>, <em>d</em>. In the normal case, when the
+agent’s <code class="xref py py-attr docutils literal notranslate"><span class="pre">optimized_learning</span></code> parameter is <code class="docutils literal notranslate"><span class="pre">False</span></code>, the base-level activation is computed using
+the amount of time that has elapsed since each of the past experiences of <em>i</em>; in the following this
+set of times of experiences of <em>i</em> before <em>t</em> is denoted by <img class="math" src="_images/math/a9a9b814243160d3274c780618de2b46a4298589.png" alt="\mathcal{T}_{i}(t)"/>.</p>
+<blockquote>
+<div><div class="math">
+<p><img src="_images/math/7deed990819a595b88c5a1169c047337448895ea.png" alt="B_{i}(t) = \ln \left( \sum_{t' \in \mathcal{T}_{i}(t)} (t - t')^{-d} \right)"/></p>
+</div></div></blockquote>
+<p>If the agent’s <code class="xref py py-attr docutils literal notranslate"><span class="pre">optimized_learning</span></code> parameter is <code class="docutils literal notranslate"><span class="pre">True</span></code> an approximation is used instead, sometimes less taxing of
+computational resources. It is particularly useful if the same instances are expected to be seen many times, and assumes
+that repeated experiences of the various instances are distributed roughly evenly over time.
+Instead of using the times of all the past occurrences of <em>i</em>, it uses <img class="math" src="_images/math/400168b1b97dfbe85fe1a71d0f3d47b5e16e42e9.png" alt="t_{0}"/>, the time of
+the first appearance of <em>i</em>, and <img class="math" src="_images/math/cc61f93653ec3fefdef79271b6720579eeb85d5b.png" alt="n_i(t)"/>, a count of the number of times <em>i</em> has appeared before time <em>t</em>.</p>
+<blockquote>
+<div><div class="math">
+<p><img src="_images/math/36c4a5f9291ef9ae6b241b70eaf0ffd36a0689b5.png" alt="B_{i}(t) = \ln(\frac{n_{i}(t)}{1 - d}) - d \ln(t - t_{0})"/></p>
+</div></div></blockquote>
+<p>The <code class="docutils literal notranslate"><span class="pre">optimized_learning</span></code> parameter may also be set to a positive integer. This specifies a number of most recent
+reinforcements of a chunk to be used to compute the base-level activation in the normal way, with the contributions
+of any older than those approximated using a formula similar to the preceding.</p>
+<p>Note that setting the <code class="docutils literal notranslate"><span class="pre">decay</span></code> parameter to <code class="docutils literal notranslate"><span class="pre">None</span></code> disables the computation of base-level
+activation. That is, the base-level component of the total activation is zero in this case.</p>
+</section>
+<section id="partial-matching">
+<h3>Partial Matching<a class="headerlink" href="#partial-matching" title="Link to this heading">¶</a></h3>
+<p>If the agent’s <code class="xref py py-attr docutils literal notranslate"><span class="pre">mismatch_penalty</span></code> parameter is <code class="docutils literal notranslate"><span class="pre">None</span></code>, the partial matching correction, <img class="math" src="_images/math/3425158e1556e8fe988606158a0a0145d9239ccb.png" alt="M_{i}"/>, is zero.
+Otherwise <img class="math" src="_images/math/3425158e1556e8fe988606158a0a0145d9239ccb.png" alt="M_{i}"/> depends upon the similarities of the attributes of the instance to those attributes
+being sought in the retrieval and the value of the <cite>mismatch_penalty</cite> parameter.</p>
+<p>PyIBL represents similarities as real numbers between zero and one, inclusive, where two values being completely similar, <code class="docutils literal notranslate"><span class="pre">==</span></code>,,
+has a value of one; and being completely dissimilar has a value of zero; with various other degrees of similarity being
+positive, real numbers less than one.</p>
+<p>How to compute the similarity of two instances is determined by the programmer, using the
+method <code class="xref py py-meth docutils literal notranslate"><span class="pre">similarity()</span></code>.
+A function is supplied to this method to be applied to values of the
+attributes of given names, this function returning a similarity value. In addition, the <code class="docutils literal notranslate"><span class="pre">similarity</span></code> method
+can assign a weight, <img class="math" src="_images/math/16cb1e006199f0853a2dc67ea814446a38beb54e.png" alt="\omega"/>, to these attributes, allowing the mismatch contributions of multiple attributes
+to be scaled with respect to one another. If not explicitly supplied this weight defaults to one.</p>
+<p>If the <code class="docutils literal notranslate"><span class="pre">mismatch</span></code> parameter has positive real value <img class="math" src="_images/math/4a3598141469c2555591e66606a1b86d4ec6dca9.png" alt="\mu"/>, the similarity of attribute <em>j</em> of
+instance <em>i</em> to the desired
+value of that attribute is <img class="math" src="_images/math/3ed0beb19a713357408972e04b961b2a22f37700.png" alt="S_{ij}"/>, the similarity weight of attribute <em>j</em> is <img class="math" src="_images/math/83d032f27dc1c395fc53f5a8ff1a00b8a9c50643.png" alt="\omega_{j}"/>,
+and the set of all attributes for which a similarity function is defined is <img class="math" src="_images/math/1c407cadee66a3a40c25f2119e3a8c44f681beb2.png" alt="\mathcal{F}"/>,
+the partial matching correction is</p>
+<blockquote>
+<div><div class="math">
+<p><img src="_images/math/8b98cc05f88d09573ead2769dddc92f39c8e0374.png" alt="M_{i} = \mu \sum_{j \in \mathcal{F}} \omega_{j} (S_{ij} - 1)"/></p>
+</div></div></blockquote>
+<p>The value of <img class="math" src="_images/math/4a3598141469c2555591e66606a1b86d4ec6dca9.png" alt="\mu"/> should be positive, and thus <img class="math" src="_images/math/3425158e1556e8fe988606158a0a0145d9239ccb.png" alt="M_{i}"/> is negative, so it is not so much that increased
+similarities increase the activation as dissimilarities reduce it, and increased similarities simply cause it
+to be reduced less, scaled by the value of <img class="math" src="_images/math/4a3598141469c2555591e66606a1b86d4ec6dca9.png" alt="\mu"/>.</p>
+<p>Attributes for which no similarity function is defined are always matched exactly, non-matching instances not
+being considered at all.</p>
+</section>
+<section id="activation-noise">
+<h3>Activation noise<a class="headerlink" href="#activation-noise" title="Link to this heading">¶</a></h3>
+<p>The activation noise, <img class="math" src="_images/math/0ad7b30534898f253002222f998f38001e604648.png" alt="\epsilon"/>, implements the stochasticity of retrievals from an agent’s memory.
+It is sampled from a distribution, scaled by the <code class="docutils literal notranslate"><span class="pre">noise</span></code> parameter. This sampling occurs every time the
+activation of an instance needs to be calculated, and is typically different each time.</p>
+<p>By default this distribution is a logistic distribution centered on zero. The distribution used can be
+changed for special purposes by using an <code class="xref py py-class docutils literal notranslate"><span class="pre">Agent</span></code>’s <code class="docutils literal notranslate"><span class="pre">noise_distribution</span></code> attribute, though for
+nearly all uses the default is the right choice.</p>
+<p>An <code class="xref py py-class docutils literal notranslate"><span class="pre">Agent</span></code> has a scale parameter, <code class="docutils literal notranslate"><span class="pre">noise</span></code>. If this parameter is denoted as <img class="math" src="_images/math/b52df27bfb0b1e3af0c2c68a7b9da459178c2a7d.png" alt="\sigma"/>, and
+if the value sampled from the distribution is <img class="math" src="_images/math/4b0fcdf5bbee5b94367e76452870b31d7c74f348.png" alt="\xi"/>, the activation noise is</p>
+<blockquote>
+<div><div class="math">
+<p><img src="_images/math/364ccbbcb92c04a3c86f5cd446c0f75d08a7bf60.png" alt="\epsilon = \sigma \xi"/></p>
+</div></div></blockquote>
+<p>Note that setting the <code class="docutils literal notranslate"><span class="pre">noise</span></code> parameter to zero results in supplying
+no noise to the activation. This does not quite make operation of
+PyIBL deterministic, since retrievals of instances with the same
+activations are resolved randomly.</p>
+</section>
+</section>
+<section id="blending">
+<h2>Blending<a class="headerlink" href="#blending" title="Link to this heading">¶</a></h2>
+<p>Once the activations of all the relevant instances have been computed, they are used to compute
+a blended value of the utility, an average of the utilities of those instances weighted by a function
+of the instances’ activations, the probability of retrieval.</p>
+<p>A parameter, the <code class="xref py py-attr docutils literal notranslate"><span class="pre">temperature</span></code>, or <img class="math" src="_images/math/914b2d4b6659b86d3153d5510839dfb254dfc8a3.png" alt="\tau"/>, is used in constructing this blended value.
+In PyIBL the value of this parameter is by default the <code class="xref py py-attr docutils literal notranslate"><span class="pre">noise</span></code> parameter used for activation noise,
+multiplied by <img class="math" src="_images/math/8db467030dc4a1799b53811c4d3e227c3511fb3f.png" alt="\sqrt{2}"/>. However it can be set independently of the <code class="docutils literal notranslate"><span class="pre">noise</span></code>, if preferred, and is
+often set to <code class="docutils literal notranslate"><span class="pre">1</span></code>.</p>
+<p>For a given option being considered, <em>k</em>, let <img class="math" src="_images/math/1c86225325b20e62e9a8eca3de7a852eaefaf574.png" alt="\mathcal{M}_{k}"/> be the set of all matching instances.
+Then the probability of retrieval of instance <img class="math" src="_images/math/9dcf02c0bcba6f7e6d376a8706922936671a2e6f.png" alt="i \in \mathcal{M}_{k}"/> at time <em>t</em> is</p>
+<blockquote>
+<div><div class="math">
+<p><img src="_images/math/426891d382a1f9d2eb239ab003e279178346d2a6.png" alt="P_{i}(t) = \frac{e^{A_{i}(t) / \tau}}{\sum_{i' \in \mathcal{M}_{k}}{e^{A_{i'}(t) / \tau}}}"/></p>
+</div></div></blockquote>
+<p>From these we can compute the blended value at time <em>t</em>, <img class="math" src="_images/math/188e192d61e909c9f755f209b99e9864f299bc56.png" alt="V_{k}(t)"/> of this option’s various utilities in the
+instances for this option. If <img class="math" src="_images/math/ea13b9e348dca22db563042e60e36be2ee06ba83.png" alt="u_{i}"/> is the utility that was provided as the first argument in the call to
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">respond()</span></code> that completed the experience of instance <em>i</em>, or equivalently was supplied by a call to
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">populate()</span></code> or with the <code class="xref py py-attr docutils literal notranslate"><span class="pre">default_utility</span></code>, this blended value is</p>
+<blockquote>
+<div><div class="math">
+<p><img src="_images/math/0327a8b8ee828c0a0727fdfbbf6a76d417687a2b.png" alt="V_{k}(t) = \sum_{i \in \mathcal{M}_{k}}{P_{i}(t) u_{i}}"/></p>
+</div></div></blockquote>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &#169;2014-2024 Carnegie Mellon University.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.3.7</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
+      
+      |
+      <a href="_sources/internals.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

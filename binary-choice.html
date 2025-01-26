@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Binary choice example &#8212; PyIBL 5.1.6 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d1102ebc" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=a66d8bb5" />
+    <script src="_static/documentation_options.js?v=d050982f"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Rock paper scissors game example" href="rock-paper-scissors.html" />
+    <link rel="prev" title="Examples" href="examples.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="index.html">
+    <img class="logo" src="_static/pyibl.png" alt="Logo" />
+    
+  </a>
+</p>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="index.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reference.html">Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="internals.html">Internals</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="examples.html">Examples</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Binary choice example</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#adding-a-log-file">Adding a log file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#using-multiple-processes">Using multiple processes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="rock-paper-scissors.html">Rock paper scissors game example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="multi-agent-network.html">Multi-agent network example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="insider-attack.html">Insider attack example</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="changes.html">Changes</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="examples.html">Examples</a><ul>
+      <li>Previous: <a href="examples.html" title="previous chapter">Examples</a></li>
+      <li>Next: <a href="rock-paper-scissors.html" title="next chapter">Rock paper scissors game example</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="binary-choice-example">
+<h1>Binary choice example<a class="headerlink" href="#binary-choice-example" title="Link to this heading">¶</a></h1>
+<p>Here is described a simple example of using PyIBL, in this case modeling a simple binary choice task.
+In this task the virtual participant is asked repeatedly to choose between two options, one safe and one risky,
+trying to learn from experience how to maximize the total points they earn.
+Choosing the safe option always earns three points, but choosing the risky option sometimes earns a fixed value greater than three,
+but others earns no points. There are three conditions to this experiment, each with that fixed, higher payout having a particular
+value. In all three conditions that higher payout and the probability of earning it are chosen so that the expected value
+of the choice is exactly three, the same as the safe choice.
+Thus, if given exact, descriptive knowledge of what will be earned a fully rational participant would know it doesn’t really matter
+which choice is made, but most actual humans do show a preference one way or another.
+The goal here is to see PyIBL mimic that behavior. Here are the rewards for the two options in the three different conditions, together
+with the probability of the high reward if the risky option is chosen:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>condition</p></th>
+<th class="head"><p>safe</p></th>
+<th class="head"><p>risky low</p></th>
+<th class="head"><p>risky high</p></th>
+<th class="head"><p>probability of high</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>4</p></td>
+<td><p>3 points</p></td>
+<td><p>0 points</p></td>
+<td><p>4 points</p></td>
+<td><p>0.75</p></td>
+</tr>
+<tr class="row-odd"><td><p>6</p></td>
+<td><p>3 points</p></td>
+<td><p>0 points</p></td>
+<td><p>6 points</p></td>
+<td><p>0.5</p></td>
+</tr>
+<tr class="row-even"><td><p>12</p></td>
+<td><p>3 points</p></td>
+<td><p>0 points</p></td>
+<td><p>12 points</p></td>
+<td><p>0.25</p></td>
+</tr>
+</tbody>
+</table>
+<p>In this example each participant is asked to perform this task sixty times, learning what to expect over these sixty rounds.
+There are 10,000 virtual participants in each condition, each completely independent of one another.
+We plot, using the Python <a class="reference external" href="https://matplotlib.org/">Matplotlib</a> library, for each condition, the mean over the 10,000 participants of how often the risky choice was made at each round,
+displaying there preference of the virtual participants between the safe and risky options as it evolves with increased
+experience. Because running this model for 1.8 million choices (3 conditions × 60 rounds × 10,000 participants) typically requires
+several minutes we also display a progress indicator of how far along the model is, using the Python library <a class="reference external" href="https://tqdm.github.io/">tqdm</a>.</p>
+<p>After exploring this model, we also construct two slightly amended versions. The first shows how, in addition to displaying the plot
+of the frequency of choosing risky, to capture a CSV file of the details of each iteration for offline analysis.
+The second shows a way to take advantage of a multi-core machine to speed up the modeling by running model in multiple, concurrent
+processes.</p>
+<p><a class="reference download internal" download="" href="_downloads/6e4c100bb8ea094146a75eb68785c90d/binary-choice.zip"><code class="xref download docutils literal notranslate"><span class="pre">Click</span> <span class="pre">here</span> <span class="pre">to</span> <span class="pre">download</span></code></a> a zipped archive for the three versions of the code
+of the binary choice example described here, along with a <code class="docutils literal notranslate"><span class="pre">requirements.txt</span></code> file. The recommended way of running these
+examples yourself is to create and activate a virtual environment using venv or conda, doing <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">-r</span> <span class="pre">requirements.txt</span></code> in
+it, and then in it running Python on the desired model file.</p>
+<p>Here is the initial version (available as <code class="docutils literal notranslate"><span class="pre">binary_choice.py</span></code> in the download, above), followed by a detailed description thereof:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="c1"># Copyright 2024 Carnegie Mellon University</span>
+<span class="linenos"> 2</span><span class="c1"># Binary choice example using PyIBL</span>
+<span class="linenos"> 3</span>
+<span class="linenos"> 4</span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="linenos"> 5</span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="linenos"> 6</span><span class="kn">from</span> <span class="nn">pyibl</span> <span class="kn">import</span> <span class="n">Agent</span>
+<span class="linenos"> 7</span><span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">random</span>
+<span class="linenos"> 8</span><span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
+<span class="linenos"> 9</span>
+<span class="linenos">10</span><span class="n">HIGH_PAYOUTS</span> <span class="o">=</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">12</span><span class="p">]</span>
+<span class="linenos">11</span><span class="n">SAFE_PAYOUT</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="linenos">12</span><span class="n">PLOT_FILE</span> <span class="o">=</span> <span class="s2">&quot;binary-choice.png&quot;</span>
+<span class="linenos">13</span><span class="n">ROUNDS</span> <span class="o">=</span> <span class="mi">60</span>
+<span class="linenos">14</span><span class="n">PARTICIPANTS</span> <span class="o">=</span> <span class="mi">10_000</span>
+<span class="linenos">15</span><span class="n">PREPOPULATED_MULTIPLIER</span> <span class="o">=</span> <span class="mf">1.2</span>
+<span class="linenos">16</span>
+<span class="linenos">17</span><span class="k">def</span> <span class="nf">run_condition</span><span class="p">(</span><span class="n">high_payout</span><span class="p">,</span> <span class="n">progress</span><span class="p">):</span>
+<span class="linenos">18</span>    <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="linenos">19</span>    <span class="n">high_probability</span> <span class="o">=</span> <span class="n">SAFE_PAYOUT</span> <span class="o">/</span> <span class="n">high_payout</span>
+<span class="linenos">20</span>    <span class="k">for</span> <span class="n">participant</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">PARTICIPANTS</span><span class="p">):</span>
+<span class="linenos">21</span>        <span class="n">agent</span> <span class="o">=</span> <span class="n">Agent</span><span class="p">(</span><span class="n">default_utility</span><span class="o">=</span><span class="p">(</span><span class="n">PREPOPULATED_MULTIPLIER</span> <span class="o">*</span> <span class="n">high_payout</span><span class="p">))</span>
+<span class="linenos">22</span>        <span class="n">round_results</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">ROUNDS</span>
+<span class="linenos">23</span>        <span class="k">for</span> <span class="nb">round</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ROUNDS</span><span class="p">):</span>
+<span class="linenos">24</span>            <span class="n">choice</span> <span class="o">=</span> <span class="n">agent</span><span class="o">.</span><span class="n">choose</span><span class="p">([</span><span class="s2">&quot;safe&quot;</span><span class="p">,</span> <span class="s2">&quot;risky&quot;</span><span class="p">])</span>
+<span class="linenos">25</span>            <span class="k">if</span> <span class="n">choice</span> <span class="o">==</span> <span class="s2">&quot;safe&quot;</span><span class="p">:</span>
+<span class="linenos">26</span>                <span class="n">payoff</span> <span class="o">=</span> <span class="n">SAFE_PAYOUT</span>
+<span class="linenos">27</span>            <span class="k">elif</span> <span class="n">random</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">high_probability</span><span class="p">:</span>
+<span class="linenos">28</span>                <span class="n">payoff</span> <span class="o">=</span> <span class="n">high_payout</span>
+<span class="linenos">29</span>            <span class="k">else</span><span class="p">:</span>
+<span class="linenos">30</span>                <span class="n">payoff</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="linenos">31</span>            <span class="n">agent</span><span class="o">.</span><span class="n">respond</span><span class="p">(</span><span class="n">payoff</span><span class="p">)</span>
+<span class="linenos">32</span>            <span class="n">round_results</span><span class="p">[</span><span class="nb">round</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">choice</span> <span class="o">==</span> <span class="s2">&quot;risky&quot;</span><span class="p">)</span>
+<span class="linenos">33</span>        <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">round_results</span><span class="p">)</span>
+<span class="linenos">34</span>        <span class="n">progress</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+<span class="linenos">35</span>    <span class="k">return</span> <span class="n">results</span>
+<span class="linenos">36</span>
+<span class="linenos">37</span><span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+<span class="linenos">38</span>    <span class="n">progress</span> <span class="o">=</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">total</span><span class="o">=</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">HIGH_PAYOUTS</span><span class="p">)</span> <span class="o">*</span> <span class="n">PARTICIPANTS</span><span class="p">))</span>
+<span class="linenos">39</span>    <span class="k">for</span> <span class="n">payout</span> <span class="ow">in</span> <span class="n">HIGH_PAYOUTS</span><span class="p">:</span>
+<span class="linenos">40</span>        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">ROUNDS</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span>
+<span class="linenos">41</span>                 <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">run_condition</span><span class="p">(</span><span class="n">payout</span><span class="p">,</span> <span class="n">progress</span><span class="p">)),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span>
+<span class="linenos">42</span>                 <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;risky high payoff = </span><span class="si">{</span><span class="n">payout</span><span class="si">}</span><span class="s2"> points&quot;</span><span class="p">)</span>
+<span class="linenos">43</span>    <span class="n">plt</span><span class="o">.</span><span class="n">xticks</span><span class="p">([</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="mi">10</span> <span class="o">*</span> <span class="n">n</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">round</span><span class="p">((</span><span class="n">ROUNDS</span> <span class="o">+</span> <span class="mi">10</span><span class="p">)</span> <span class="o">/</span> <span class="mi">10</span><span class="p">))])</span>
+<span class="linenos">44</span>    <span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+<span class="linenos">45</span>    <span class="n">plt</span><span class="o">.</span><span class="n">yticks</span><span class="p">([</span><span class="nb">round</span><span class="p">(</span><span class="n">n</span> <span class="o">/</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">)])</span>
+<span class="linenos">46</span>    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;fraction choosing risky&quot;</span><span class="p">)</span>
+<span class="linenos">47</span>    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;round&quot;</span><span class="p">)</span>
+<span class="linenos">48</span>    <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="linenos">49</span>    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Safe (</span><span class="si">{</span><span class="n">SAFE_PAYOUT</span><span class="si">}</span><span class="s2"> points) versus risky, </span><span class="si">{</span><span class="n">PARTICIPANTS</span><span class="si">:</span><span class="s2">,</span><span class="si">}</span><span class="s2"> participants&quot;</span><span class="p">)</span>
+<span class="linenos">50</span>    <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">PLOT_FILE</span><span class="p">)</span>
+<span class="linenos">51</span>
+<span class="linenos">52</span><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+<span class="linenos">53</span>    <span class="n">main</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>First (lines 4–8) are imported the various Python modules needed:</p>
+<ul class="simple">
+<li><p>the PyIBL <code class="docutils literal notranslate"><span class="pre">Agent</span></code> class</p></li>
+<li><p>the <code class="docutils literal notranslate"><span class="pre">random()</span></code> method of the Python <a class="reference external" href="https://docs.python.org/3.8/library/random.html">random</a> module,
+which will be used for resolving the gamble implicit in the risky option</p></li>
+<li><p>the <a class="reference external" href="https://numpy.org/">NumPy</a> Python library which will be used for averaging results for plotting</p></li>
+<li><p>the <a class="reference external" href="https://matplotlib.org/stable/tutorials/pyplot.html">pyplot</a> interface to Matplotlib</p></li>
+<li><p>the tqdm module</p></li>
+</ul>
+<p>Next (lines 10–15) are defined various constants used by the model. <code class="docutils literal notranslate"><span class="pre">HIGH_PAYOUTS</span></code> is a list of the three
+possible high results of the risky gamble, these values also serving as the names of the three conditions.
+Also define here is the reward of the safe option, the file in which to save the resulting plot, the number
+of rounds and virtual participants, and a factor used in computing the utilities of options that have not
+yet been seen, as described below.</p>
+<p>The model <em>per se</em> is defined in the <code class="docutils literal notranslate"><span class="pre">run_condition()</span></code> function on lines 17–35. The condition is specified by
+its first argument, and a tqdm object is passed in as its second argument, to be updated each time a participant’s
+choices are concluded. The results of every choice for each participant, encoded as <code class="docutils literal notranslate"><span class="pre">0</span></code> for safe and <code class="docutils literal notranslate"><span class="pre">1</span></code> for risky,
+are accumulated into the <code class="docutils literal notranslate"><span class="pre">results</span></code> local variable, each participant’s results appearing in a separate sub-list.
+The probability of a high reward from the risky option is computed from the values of that reward and the safe one
+so as to ensure the expected value of the risky option’s reward is the same as the safe reward.</p>
+<p>After these preliminaries each participant is looped over.
+An <code class="docutils literal notranslate"><span class="pre">Agent</span></code> is allocated for the participant. The <code class="docutils literal notranslate"><span class="pre">default_utility</span></code> of this agent is set to a value
+slightly above the maximum possible reward of an actual choice to ensure random exploration of both options; once
+the results of any real experiences of the options have been experienced by this participant the <code class="docutils literal notranslate"><span class="pre">default_utility</span></code> is
+ignored. The sub-list to accumulate this participant’s results is allocated on line 22; each value is initialized
+to <code class="docutils literal notranslate"><span class="pre">None</span></code>, but will be updated a few lines below.</p>
+<p>Now, for this participant, the sixty rounds are played. First (line 24) a choice is made between safe or risky.
+Then (lines 23–30) the reward for this choice is computed. On line 31 the <code class="docutils literal notranslate"><span class="pre">Agent</span></code> is told the value of this
+reward, and on line 32 it is recorded as a zero or one for subsequent reporting.</p>
+<p>Once all sixty rounds have been played the sub-list recording this participant’s choices is appended to the
+list of the entire condition’s results. Then the progress indicator is updated to note that this participants
+activities have finished, and the next participant’s choices commence. After all the participants have
+finished running the total results, a list of lists, is returned.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">main()</span></code> finction (lines 37–51) first allocates a tqdm progress indicator. It then loops over the three
+conditions (line 39) calling <code class="docutils literal notranslate"><span class="pre">run_condition()</span></code> for each and passing in the progress indicator (line 41), and
+uses NumPy to compute the means across participants of the results of each round’s results, each mean being a
+number between zero and one since the individual results are all zeros and ones (also line 39). Lines 40–50
+construct and save the resulting plot. Lines 52–53 are the usual Python module boilerplate for ensuring that
+the <code class="docutils literal notranslate"><span class="pre">main()</span></code> function is called if the file is simply loaded as <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">binary-choice.py</span></code>.</p>
+<p>The resulting plot from one run of this model looks like the following. Note that other runs will differ slightly
+because the model is stochastic. However the differences will be subtle as most are averaged out wince we are
+running the model over a large number of participants.</p>
+<img alt="_images/binary-choice.png" src="_images/binary-choice.png" />
+<p>From this plot we can see that when the high reward from the risky option is frequent (the 4 condition, at 75%) as
+experience accumulates it is slightly preferred. But when it is infrequent, but higher (the 6 and 12 conditions, at 50% and 25%, respectively)
+the safe option is preferred instead. The spike in the first few rounds for the 4 condition reflects that the high payout occurs frequently during
+the initial, random exploration, but it subsides after a few rounds of real experience have accumulated.</p>
+<section id="adding-a-log-file">
+<h2>Adding a log file<a class="headerlink" href="#adding-a-log-file" title="Link to this heading">¶</a></h2>
+<p>When running models like this it is often desired not just to see the average results, but to see
+and perform analysis on the details of each choice for each participant. This is often easily facilitated
+by writing a CSV file of the results. This can be added using the Python <a class="reference external" href="https://docs.python.org/3.8/library/csv.html">csv</a> module.</p>
+<p>Here is one way to add this, also available as the file <code class="docutils literal notranslate"><span class="pre">binary_choice_with-log.py</span></code> in the download above.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="c1"># Copyright 2024 Carnegie Mellon University</span>
+<span class="linenos"> 2</span><span class="c1"># Binary choice example using PyIBL writing a log file</span>
+<span class="linenos"> 3</span>
+<span class="linenos"> 4</span><span class="kn">import</span> <span class="nn">csv</span>
+<span class="linenos"> 5</span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="linenos"> 6</span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="linenos"> 7</span><span class="kn">from</span> <span class="nn">pyibl</span> <span class="kn">import</span> <span class="n">Agent</span>
+<span class="linenos"> 8</span><span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">random</span>
+<span class="linenos"> 9</span><span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
+<span class="linenos">10</span>
+<span class="linenos">11</span><span class="n">HIGH_PAYOUTS</span> <span class="o">=</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">12</span><span class="p">]</span>
+<span class="linenos">12</span><span class="n">SAFE_PAYOUT</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="linenos">13</span><span class="n">PLOT_FILE</span> <span class="o">=</span> <span class="s2">&quot;binary-choice.png&quot;</span>
+<span class="linenos">14</span><span class="n">LOG_FILE</span> <span class="o">=</span> <span class="s2">&quot;binary-choice-log.csv&quot;</span>
+<span class="linenos">15</span><span class="n">ROUNDS</span> <span class="o">=</span> <span class="mi">60</span>
+<span class="linenos">16</span><span class="n">PARTICIPANTS</span> <span class="o">=</span> <span class="mi">10_000</span>
+<span class="linenos">17</span><span class="n">PREPOPULATED_MULTIPLIER</span> <span class="o">=</span> <span class="mf">1.2</span>
+<span class="linenos">18</span>
+<span class="linenos">19</span><span class="k">def</span> <span class="nf">run_condition</span><span class="p">(</span><span class="n">high_payout</span><span class="p">,</span> <span class="n">log</span><span class="p">,</span> <span class="n">progress</span><span class="p">):</span>
+<span class="linenos">20</span>    <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="linenos">21</span>    <span class="n">high_probability</span> <span class="o">=</span> <span class="n">SAFE_PAYOUT</span> <span class="o">/</span> <span class="n">high_payout</span>
+<span class="linenos">22</span>    <span class="k">for</span> <span class="n">participant</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">PARTICIPANTS</span><span class="p">):</span>
+<span class="linenos">23</span>        <span class="n">agent</span> <span class="o">=</span> <span class="n">Agent</span><span class="p">(</span><span class="n">default_utility</span><span class="o">=</span><span class="p">(</span><span class="n">PREPOPULATED_MULTIPLIER</span> <span class="o">*</span> <span class="n">high_payout</span><span class="p">))</span>
+<span class="linenos">24</span>        <span class="n">round_results</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="n">ROUNDS</span>
+<span class="linenos">25</span>        <span class="k">for</span> <span class="nb">round</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ROUNDS</span><span class="p">):</span>
+<span class="linenos">26</span>            <span class="n">choice</span> <span class="o">=</span> <span class="n">agent</span><span class="o">.</span><span class="n">choose</span><span class="p">([</span><span class="s2">&quot;safe&quot;</span><span class="p">,</span> <span class="s2">&quot;risky&quot;</span><span class="p">])</span>
+<span class="linenos">27</span>            <span class="k">if</span> <span class="n">choice</span> <span class="o">==</span> <span class="s2">&quot;safe&quot;</span><span class="p">:</span>
+<span class="linenos">28</span>                <span class="n">payoff</span> <span class="o">=</span> <span class="n">SAFE_PAYOUT</span>
+<span class="linenos">29</span>            <span class="k">elif</span> <span class="n">random</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">high_probability</span><span class="p">:</span>
+<span class="linenos">30</span>                <span class="n">payoff</span> <span class="o">=</span> <span class="n">high_payout</span>
+<span class="linenos">31</span>            <span class="k">else</span><span class="p">:</span>
+<span class="linenos">32</span>                <span class="n">payoff</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="linenos">33</span>            <span class="n">agent</span><span class="o">.</span><span class="n">respond</span><span class="p">(</span><span class="n">payoff</span><span class="p">)</span>
+<span class="linenos">34</span>            <span class="n">round_results</span><span class="p">[</span><span class="nb">round</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">choice</span> <span class="o">==</span> <span class="s2">&quot;risky&quot;</span><span class="p">)</span>
+<span class="linenos">35</span>            <span class="n">log</span><span class="o">.</span><span class="n">writerow</span><span class="p">([</span><span class="n">high_payout</span><span class="p">,</span> <span class="n">participant</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="nb">round</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">SAFE_PAYOUT</span><span class="p">,</span> <span class="n">high_payout</span><span class="p">,</span> <span class="n">high_probability</span><span class="p">,</span> <span class="n">choice</span><span class="p">,</span> <span class="n">payoff</span><span class="p">])</span>
+<span class="linenos">36</span>        <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">round_results</span><span class="p">)</span>
+<span class="linenos">37</span>        <span class="n">progress</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+<span class="linenos">38</span>    <span class="k">return</span> <span class="n">results</span>
+<span class="linenos">39</span>
+<span class="linenos">40</span><span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+<span class="linenos">41</span>    <span class="n">progress</span> <span class="o">=</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">total</span><span class="o">=</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">HIGH_PAYOUTS</span><span class="p">)</span> <span class="o">*</span> <span class="n">PARTICIPANTS</span><span class="p">))</span>
+<span class="linenos">42</span>    <span class="n">results</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="linenos">43</span>    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">LOG_FILE</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">newline</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+<span class="linenos">44</span>        <span class="n">writer</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">writer</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+<span class="linenos">45</span>        <span class="c1"># write the header of the CSV log file</span>
+<span class="linenos">46</span>        <span class="n">writer</span><span class="o">.</span><span class="n">writerow</span><span class="p">(</span><span class="s2">&quot;condition,participant,round,safe payout,risky high payout,risky high probability,choice,reward&quot;</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">))</span>
+<span class="linenos">47</span>        <span class="k">for</span> <span class="n">payout</span> <span class="ow">in</span> <span class="n">HIGH_PAYOUTS</span><span class="p">:</span>
+<span class="linenos">48</span>            <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">ROUNDS</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span>
+<span class="linenos">49</span>                     <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">run_condition</span><span class="p">(</span><span class="n">payout</span><span class="p">,</span> <span class="n">writer</span><span class="p">,</span> <span class="n">progress</span><span class="p">)),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span>
+<span class="linenos">50</span>                     <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;risky high payoff = </span><span class="si">{</span><span class="n">payout</span><span class="si">}</span><span class="s2"> points&quot;</span><span class="p">)</span>
+<span class="linenos">51</span>    <span class="n">plt</span><span class="o">.</span><span class="n">xticks</span><span class="p">([</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="mi">10</span> <span class="o">*</span> <span class="n">n</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">round</span><span class="p">((</span><span class="n">ROUNDS</span> <span class="o">+</span> <span class="mi">10</span><span class="p">)</span> <span class="o">/</span> <span class="mi">10</span><span class="p">))])</span>
+<span class="linenos">52</span>    <span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+<span class="linenos">53</span>    <span class="n">plt</span><span class="o">.</span><span class="n">yticks</span><span class="p">([</span><span class="nb">round</span><span class="p">(</span><span class="n">n</span> <span class="o">/</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">)])</span>
+<span class="linenos">54</span>    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;fraction choosing risky&quot;</span><span class="p">)</span>
+<span class="linenos">55</span>    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;round&quot;</span><span class="p">)</span>
+<span class="linenos">56</span>    <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="linenos">57</span>    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Safe (</span><span class="si">{</span><span class="n">SAFE_PAYOUT</span><span class="si">}</span><span class="s2"> points) verus risky, </span><span class="si">{</span><span class="n">PARTICIPANTS</span><span class="si">:</span><span class="s2">,</span><span class="si">}</span><span class="s2"> participants&quot;</span><span class="p">)</span>
+<span class="linenos">58</span>    <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">PLOT_FILE</span><span class="p">)</span>
+<span class="linenos">59</span>
+<span class="linenos">60</span><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+<span class="linenos">61</span>    <span class="n">main</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>On line 4 we import the csv module. One lines 43-44 we open the desired CSV file to which to write the details,
+and allocate a <code class="docutils literal notranslate"><span class="pre">csv.writer</span></code> object to correctly format the results. One line 46 we write the initial header
+row of the CSV file; the file will describe eight columns, the condition, participant and round, together with details of the various
+gambles, and finally the actual choice made by the model for that participant and round together with the resulting actual reward.
+On line 35 we write the row corresponding to a single choice being made. While the model counts rounds and participants starting
+from zero, it is often preferred to count them starting from one, so we add one to them when writing them here.
+Everything else in this revised model is the same as in the original one.</p>
+<p>The resulting <code class="docutils literal notranslate"><span class="pre">binary-choice-log.csv</span></code> file consists of nearly two million lines,
+and is about 43 megabytes.
+Here are its first few and last few lines; if you run it yourself the results will be similar
+but slightly different because the model is stochastic:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">condition</span><span class="p">,</span><span class="n">participant</span><span class="p">,</span><span class="nb">round</span><span class="p">,</span><span class="n">safe</span> <span class="n">payout</span><span class="p">,</span><span class="n">risky</span> <span class="n">high</span> <span class="n">payout</span><span class="p">,</span><span class="n">risky</span> <span class="n">high</span> <span class="n">probability</span><span class="p">,</span><span class="n">choice</span><span class="p">,</span><span class="n">reward</span>
+<span class="mi">4</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mf">0.75</span><span class="p">,</span><span class="n">risky</span><span class="p">,</span><span class="mi">4</span>
+<span class="mi">4</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mf">0.75</span><span class="p">,</span><span class="n">safe</span><span class="p">,</span><span class="mi">3</span>
+<span class="mi">4</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mf">0.75</span><span class="p">,</span><span class="n">risky</span><span class="p">,</span><span class="mi">0</span>
+<span class="mi">4</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mf">0.75</span><span class="p">,</span><span class="n">safe</span><span class="p">,</span><span class="mi">3</span>
+<span class="mi">4</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mf">0.75</span><span class="p">,</span><span class="n">safe</span><span class="p">,</span><span class="mi">3</span>
+<span class="mi">4</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mf">0.75</span><span class="p">,</span><span class="n">risky</span><span class="p">,</span><span class="mi">4</span>
+<span class="mi">4</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mf">0.75</span><span class="p">,</span><span class="n">risky</span><span class="p">,</span><span class="mi">0</span>
+<span class="mi">4</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mf">0.75</span><span class="p">,</span><span class="n">safe</span><span class="p">,</span><span class="mi">3</span>
+<span class="mi">4</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mf">0.75</span><span class="p">,</span><span class="n">safe</span><span class="p">,</span><span class="mi">3</span>
+<span class="o">...</span>
+<span class="mi">12</span><span class="p">,</span><span class="mi">10000</span><span class="p">,</span><span class="mi">54</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mf">0.25</span><span class="p">,</span><span class="n">safe</span><span class="p">,</span><span class="mi">3</span>
+<span class="mi">12</span><span class="p">,</span><span class="mi">10000</span><span class="p">,</span><span class="mi">55</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mf">0.25</span><span class="p">,</span><span class="n">safe</span><span class="p">,</span><span class="mi">3</span>
+<span class="mi">12</span><span class="p">,</span><span class="mi">10000</span><span class="p">,</span><span class="mi">56</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mf">0.25</span><span class="p">,</span><span class="n">risky</span><span class="p">,</span><span class="mi">0</span>
+<span class="mi">12</span><span class="p">,</span><span class="mi">10000</span><span class="p">,</span><span class="mi">57</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mf">0.25</span><span class="p">,</span><span class="n">safe</span><span class="p">,</span><span class="mi">3</span>
+<span class="mi">12</span><span class="p">,</span><span class="mi">10000</span><span class="p">,</span><span class="mi">58</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mf">0.25</span><span class="p">,</span><span class="n">safe</span><span class="p">,</span><span class="mi">3</span>
+<span class="mi">12</span><span class="p">,</span><span class="mi">10000</span><span class="p">,</span><span class="mi">59</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mf">0.25</span><span class="p">,</span><span class="n">safe</span><span class="p">,</span><span class="mi">3</span>
+<span class="mi">12</span><span class="p">,</span><span class="mi">10000</span><span class="p">,</span><span class="mi">60</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mf">0.25</span><span class="p">,</span><span class="n">safe</span><span class="p">,</span><span class="mi">3</span>
+</pre></div>
+</div>
+</section>
+<section id="using-multiple-processes">
+<h2>Using multiple processes<a class="headerlink" href="#using-multiple-processes" title="Link to this heading">¶</a></h2>
+<p>As noted above this model typically requires several minutes to run.
+If you have a multi-core machine available you can often speed up models
+such as this, which involve multiple, independent virtual participants
+by partitioning the participants across multiple, concurrent processes.</p>
+<p>This example does that, and the code is also available as <code class="docutils literal notranslate"><span class="pre">multiple_processes.py</span></code> in
+the download above.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="c1"># Copyright 2024 Carnegie Mellon University</span>
+<span class="linenos"> 2</span><span class="c1"># Binary choice example using PyIBL and multiple processes</span>
+<span class="linenos"> 3</span>
+<span class="linenos"> 4</span><span class="kn">from</span> <span class="nn">alhazen</span> <span class="kn">import</span> <span class="n">IteratedExperiment</span>
+<span class="linenos"> 5</span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="linenos"> 6</span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="linenos"> 7</span><span class="kn">from</span> <span class="nn">pyibl</span> <span class="kn">import</span> <span class="n">Agent</span>
+<span class="linenos"> 8</span><span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">random</span>
+<span class="linenos"> 9</span>
+<span class="linenos">10</span><span class="n">HIGH_PAYOUTS</span> <span class="o">=</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">12</span><span class="p">]</span>
+<span class="linenos">11</span><span class="n">SAFE_PAYOUT</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="linenos">12</span><span class="n">PLOT_FILE</span> <span class="o">=</span> <span class="s2">&quot;binary-choice.png&quot;</span>
+<span class="linenos">13</span><span class="n">ROUNDS</span> <span class="o">=</span> <span class="mi">60</span>
+<span class="linenos">14</span><span class="n">PARTICIPANTS</span> <span class="o">=</span> <span class="mi">10_000</span>
+<span class="linenos">15</span><span class="n">PREPOPULATED_MULTIPLIER</span> <span class="o">=</span> <span class="mf">1.2</span>
+<span class="linenos">16</span><span class="n">PROCESSES</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="linenos">17</span>
+<span class="linenos">18</span><span class="k">class</span> <span class="nc">BinaryChoice</span><span class="p">(</span><span class="n">IteratedExperiment</span><span class="p">):</span>
+<span class="linenos">19</span>
+<span class="linenos">20</span>    <span class="k">def</span> <span class="nf">prepare_condition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">condition</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+<span class="linenos">21</span>        <span class="n">context</span><span class="p">[</span><span class="s2">&quot;high-probability&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">SAFE_PAYOUT</span> <span class="o">/</span> <span class="n">condition</span>
+<span class="linenos">22</span>
+<span class="linenos">23</span>    <span class="k">def</span> <span class="nf">run_participant_prepare</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">participant</span><span class="p">,</span> <span class="n">condition</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+<span class="linenos">24</span>        <span class="bp">self</span><span class="o">.</span><span class="n">agent</span> <span class="o">=</span> <span class="n">Agent</span><span class="p">(</span><span class="n">default_utility</span><span class="o">=</span><span class="p">(</span><span class="n">PREPOPULATED_MULTIPLIER</span> <span class="o">*</span> <span class="n">condition</span><span class="p">))</span>
+<span class="linenos">25</span>
+<span class="linenos">26</span>    <span class="k">def</span> <span class="nf">run_participant_run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">round</span><span class="p">,</span> <span class="n">participant</span><span class="p">,</span> <span class="n">condition</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+<span class="linenos">27</span>        <span class="n">choice</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">agent</span><span class="o">.</span><span class="n">choose</span><span class="p">([</span><span class="s2">&quot;safe&quot;</span><span class="p">,</span> <span class="s2">&quot;risky&quot;</span><span class="p">])</span>
+<span class="linenos">28</span>        <span class="k">if</span> <span class="n">choice</span> <span class="o">==</span> <span class="s2">&quot;safe&quot;</span><span class="p">:</span>
+<span class="linenos">29</span>            <span class="n">payoff</span> <span class="o">=</span> <span class="n">SAFE_PAYOUT</span>
+<span class="linenos">30</span>        <span class="k">elif</span> <span class="n">random</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">context</span><span class="p">[</span><span class="s2">&quot;high-probability&quot;</span><span class="p">]:</span>
+<span class="linenos">31</span>            <span class="n">payoff</span> <span class="o">=</span> <span class="n">condition</span>
+<span class="linenos">32</span>        <span class="k">else</span><span class="p">:</span>
+<span class="linenos">33</span>            <span class="n">payoff</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="linenos">34</span>        <span class="bp">self</span><span class="o">.</span><span class="n">agent</span><span class="o">.</span><span class="n">respond</span><span class="p">(</span><span class="n">payoff</span><span class="p">)</span>
+<span class="linenos">35</span>        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">choice</span> <span class="o">==</span> <span class="s2">&quot;risky&quot;</span><span class="p">)</span>
+<span class="linenos">36</span>
+<span class="linenos">37</span><span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+<span class="linenos">38</span>      <span class="n">exp</span> <span class="o">=</span> <span class="n">BinaryChoice</span><span class="p">(</span><span class="n">rounds</span><span class="o">=</span><span class="n">ROUNDS</span><span class="p">,</span>
+<span class="linenos">39</span>                         <span class="n">conditions</span><span class="o">=</span><span class="n">HIGH_PAYOUTS</span><span class="p">,</span>
+<span class="linenos">40</span>                         <span class="n">participants</span><span class="o">=</span><span class="n">PARTICIPANTS</span><span class="p">,</span>
+<span class="linenos">41</span>                         <span class="n">process_count</span><span class="o">=</span><span class="n">PROCESSES</span><span class="p">)</span>
+<span class="linenos">42</span>      <span class="n">results</span> <span class="o">=</span> <span class="n">exp</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+<span class="linenos">43</span>      <span class="k">for</span> <span class="n">condition</span> <span class="ow">in</span> <span class="n">exp</span><span class="o">.</span><span class="n">conditions</span><span class="p">:</span>
+<span class="linenos">44</span>          <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">ROUNDS</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">results</span><span class="p">[</span><span class="n">condition</span><span class="p">]),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span>
+<span class="linenos">45</span>                   <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;risky high payoff = </span><span class="si">{</span><span class="n">condition</span><span class="si">}</span><span class="s2"> points&quot;</span><span class="p">)</span>
+<span class="linenos">46</span>      <span class="n">plt</span><span class="o">.</span><span class="n">xticks</span><span class="p">([</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="mi">10</span> <span class="o">*</span> <span class="n">n</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">round</span><span class="p">((</span><span class="n">ROUNDS</span> <span class="o">+</span> <span class="mi">10</span><span class="p">)</span> <span class="o">/</span> <span class="mi">10</span><span class="p">))])</span>
+<span class="linenos">47</span>      <span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+<span class="linenos">48</span>      <span class="n">plt</span><span class="o">.</span><span class="n">yticks</span><span class="p">([</span><span class="nb">round</span><span class="p">(</span><span class="n">n</span> <span class="o">/</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">)])</span>
+<span class="linenos">49</span>      <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;fraction choosing risky&quot;</span><span class="p">)</span>
+<span class="linenos">50</span>      <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;round&quot;</span><span class="p">)</span>
+<span class="linenos">51</span>      <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="linenos">52</span>      <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Safe (</span><span class="si">{</span><span class="n">SAFE_PAYOUT</span><span class="si">}</span><span class="s2"> points) verus risky, </span><span class="si">{</span><span class="n">PARTICIPANTS</span><span class="si">:</span><span class="s2">,</span><span class="si">}</span><span class="s2"> participants&quot;</span><span class="p">)</span>
+<span class="linenos">53</span>      <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">PLOT_FILE</span><span class="p">)</span>
+<span class="linenos">54</span>
+<span class="linenos">55</span><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+<span class="linenos">56</span>    <span class="n">main</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>To simplify the division across processes we use the <a class="reference external" href="http://koalemos.psy.cmu.edu/alhazen/">Alhazen</a> library which is intended for just this purpose.
+Installation of Alhazen is included in the download’s <code class="docutils literal notranslate"><span class="pre">requirements.txt</span></code>, or it can be installed with <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">alhazen</span></code>. We import it
+on line 4 of the example. Because Alhazen can supply its own tqdm progress indicator we no longer have to import tqdm ourselves. On line 16 we
+define a constant that will be used later to tell Alhazen how many parallel processes we’d like to run; setting it to zero tells Alhazen to use
+its understanding of the host machines architecture to estimate what is the largest number it can run concurrently.</p>
+<p>To use Alhazen we must subclass the Alhazen <code class="docutils literal notranslate"><span class="pre">IteratedExperiment</span></code> class (lines 18–35), and divide the work formerly in the <code class="docutils literal notranslate"><span class="pre">run_condition()</span></code> function
+across the three <code class="docutils literal notranslate"><span class="pre">IteratedExperiment</span></code> methods <code class="docutils literal notranslate"><span class="pre">prepare_condition()</span></code>, <code class="docutils literal notranslate"><span class="pre">run_participant_prepare()</span></code> and <code class="docutils literal notranslate"><span class="pre">run_participant_run()</span></code>. We no
+longer have to accumulate the results as Alhazen does that for us; instead <code class="docutils literal notranslate"><span class="pre">run_participant_run()</span></code> simply needs to return the result
+of running its single round of a single participant in the relevant condition.</p>
+<p>In the <code class="docutils literal notranslate"><span class="pre">main()</span></code> function on lines 38–41 we allocate an instance of our subclass, passing in the conditions, numbers of rounds and participants, and desired
+number of concurrent preocesses. On line 42 we call this instance’s <code class="docutils literal notranslate"><span class="pre">run()</span></code> method, which returns a dictionary mapping each condition
+name to a list of lists just like those <code class="docutils literal notranslate"><span class="pre">run_condition()</span></code> did in our original implementation. On lines 43–53 we pick apart this dictionary and use
+it to create a plot just as we did earlier.</p>
+<p>On a machine in the DDMLab, a System76 Thelio Major with a 2.2 GHz AMD Ryzen 3990X 64-core CPU, running the original model requires a little over four minutes.
+But running this multi-process model using all 64 cores in parallel requires only six seconds. More modest improvements can be seen in more common
+processors with fewer cores; we can approximate the improvements possible on such machines by running the multi-process model on this same machine but setting
+the <code class="docutils literal notranslate"><span class="pre">PROCESSES</span></code> constant to values less than 64. Here are results for some values. Note that if run again these times might change slightly,
+as they are sensitive to many aspects of the machine’s operation and status, but they largely reflect a nearly linear improvement in execution time
+with increasing core use; that this linear trend tails off at the fastest times reflects that less time is being spend running the model, so the total time
+more reflects the constant time required to render the plot, which is not aided by multiple processes.</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Number of processes</p></th>
+<th class="head"><p>Time required (minutes:seconds)</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>1</p></td>
+<td><p>4:04</p></td>
+</tr>
+<tr class="row-odd"><td><p>2</p></td>
+<td><p>2:05</p></td>
+</tr>
+<tr class="row-even"><td><p>4</p></td>
+<td><p>1:02</p></td>
+</tr>
+<tr class="row-odd"><td><p>8</p></td>
+<td><p>0:32</p></td>
+</tr>
+<tr class="row-even"><td><p>16</p></td>
+<td><p>0:16</p></td>
+</tr>
+<tr class="row-odd"><td><p>32</p></td>
+<td><p>0:09</p></td>
+</tr>
+<tr class="row-even"><td><p>64</p></td>
+<td><p>0:06</p></td>
+</tr>
+</tbody>
+</table>
+<div class="line-block">
+<div class="line"><br /></div>
+<div class="line"><br /></div>
+</div>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &#169;2014-2024 Carnegie Mellon University.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.3.7</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
+      
+      |
+      <a href="_sources/binary-choice.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

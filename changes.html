@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Changes &#8212; PyIBL 5.1.6 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d1102ebc" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=a66d8bb5" />
+    <script src="_static/documentation_options.js?v=d050982f"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Insider attack example" href="insider-attack.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="index.html">
+    <img class="logo" src="_static/pyibl.png" alt="Logo" />
+    
+  </a>
+</p>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="index.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reference.html">Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="internals.html">Internals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Changes</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#version-5-1">Version 5.1</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#from-version-5-1-4-to-5-1-5">from version 5.1.4 to 5.1.5</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#from-version-5-1-3-to-5-1-4">from version 5.1.3 to 5.1.4</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#from-version-5-1-1-to-5-1-3">from version 5.1.1 to 5.1.3</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#from-version-5-1-to-5-1-1">from version 5.1 to 5.1.1</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#version-5-0">Version 5.0</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#from-version-5-0-4-to-5-1">from version 5.0.4 to 5.1</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#from-version-5-0-2-to-5-0-4">from version 5.0.2 to 5.0.4</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#from-version-5-0-1-to-5-0-3">from version 5.0.1 to 5.0.3</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#from-version-5-0-to-5-0-1">from version 5.0 to 5.0.1</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#from-version-4-2-to-5-0">from version 4.2 to 5.0</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#older-versions">Older versions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#from-version-4-2-to-4-2-0-1">from version 4.2 to  4.2.0.1</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#from-version-4-1-to-4-2">from version 4.1 to  4.2</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#from-version-4-0-to-4-1">from version 4.0 to 4.1</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#from-version-3-0-to-4-0">from version 3.0 to 4.0</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#from-version-2-0-to-3-0">from version 2.0 to 3.0</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#from-version-1-0-to-2-0">from version 1.0 to 2.0</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="insider-attack.html" title="previous chapter">Insider attack example</a></li>
+  </ul></li>
+</ul>
+</div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="changes">
+<h1>Changes<a class="headerlink" href="#changes" title="Link to this heading">¶</a></h1>
+<section id="version-5-1">
+<span id="chanages"></span><h2>Version 5.1<a class="headerlink" href="#version-5-1" title="Link to this heading">¶</a></h2>
+<section id="from-version-5-1-4-to-5-1-5">
+<h3>from version 5.1.4 to 5.1.5<a class="headerlink" href="#from-version-5-1-4-to-5-1-5" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>improved the output of the instances() method</p></li>
+<li><p>adjusted some issues raised by changes to recent versions of several of PyIBL’s dependencies</p></li>
+<li><p>improved the documentation</p></li>
+</ul>
+</section>
+<section id="from-version-5-1-3-to-5-1-4">
+<h3>from version 5.1.3 to 5.1.4<a class="headerlink" href="#from-version-5-1-3-to-5-1-4" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>Fixed a bug exhibited when <code class="xref py py-attr docutils literal notranslate"><span class="pre">default_utility</span></code> was set to exactly zero.</p></li>
+</ul>
+</section>
+<section id="from-version-5-1-1-to-5-1-3">
+<h3>from version 5.1.1 to 5.1.3<a class="headerlink" href="#from-version-5-1-1-to-5-1-3" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>Added <code class="xref py py-attr docutils literal notranslate"><span class="pre">noise_distribution</span></code>.</p></li>
+</ul>
+</section>
+<section id="from-version-5-1-to-5-1-1">
+<h3>from version 5.1 to 5.1.1<a class="headerlink" href="#from-version-5-1-to-5-1-1" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>Fixed a bug which caused some rows to be omitted from the <code class="xref py py-attr docutils literal notranslate"><span class="pre">aggregate_details</span></code>;
+since the <code class="xref py py-meth docutils literal notranslate"><span class="pre">plot()</span></code> method depends upon the <code class="xref py py-attr docutils literal notranslate"><span class="pre">aggregate_details</span></code> plots weere
+sometimes incorrect, too.</p></li>
+</ul>
+</section>
+</section>
+<section id="version-5-0">
+<h2>Version 5.0<a class="headerlink" href="#version-5-0" title="Link to this heading">¶</a></h2>
+<section id="from-version-5-0-4-to-5-1">
+<h3>from version 5.0.4 to 5.1<a class="headerlink" href="#from-version-5-0-4-to-5-1" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>Added the <code class="xref py py-attr docutils literal notranslate"><span class="pre">aggregate_details</span></code> attribute.</p></li>
+<li><p>Added the <code class="xref py py-meth docutils literal notranslate"><span class="pre">plot()</span></code> method.</p></li>
+</ul>
+</section>
+<section id="from-version-5-0-2-to-5-0-4">
+<h3>from version 5.0.2 to 5.0.4<a class="headerlink" href="#from-version-5-0-2-to-5-0-4" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>The sequence of all attribute names is now a tuple of strings rather than a list.</p></li>
+</ul>
+</section>
+<section id="from-version-5-0-1-to-5-0-3">
+<h3>from version 5.0.1 to 5.0.3<a class="headerlink" href="#from-version-5-0-1-to-5-0-3" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>Add further information to trace output.</p></li>
+<li><p>Update some copyrights and documentation.</p></li>
+</ul>
+</section>
+<section id="from-version-5-0-to-5-0-1">
+<h3>from version 5.0 to 5.0.1<a class="headerlink" href="#from-version-5-0-to-5-0-1" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>Update copyrights, documentation and dependencies.</p></li>
+<li><p>Fix a bug afflicting tracing when noise is zero.</p></li>
+</ul>
+</section>
+<section id="from-version-4-2-to-5-0">
+<h3>from version 4.2 to 5.0<a class="headerlink" href="#from-version-4-2-to-5-0" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>PyIBL now requires Python 3.8 or later.</p></li>
+<li><p>Substantial changes were made to the internal representations of agents and instances enabling faster IBL computations in
+many use cases involving large numbers of instances.</p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Agent</span></code> attributes can now be any non-empty string, and the arguments to the <code class="xref py py-class docutils literal notranslate"><span class="pre">Agent</span></code> constructor
+are now in a different order.</p></li>
+<li><p>Changed the arguments to <code class="xref py py-meth docutils literal notranslate"><span class="pre">choose()</span></code>, <code class="xref py py-meth docutils literal notranslate"><span class="pre">populate()</span></code> and <code class="xref py py-meth docutils literal notranslate"><span class="pre">forget()</span></code>.</p></li>
+<li><p>Similarity functions are now per-<code class="xref py py-class docutils literal notranslate"><span class="pre">Agent</span></code> instead of global, and are set with the <code class="xref py py-meth docutils literal notranslate"><span class="pre">similarity()</span></code> method.</p></li>
+<li><p>Similarities can now have weights, also set with the <code class="xref py py-meth docutils literal notranslate"><span class="pre">similarity()</span></code> method, allowing easier balancing
+of the contributions of multiple attributes.</p></li>
+<li><p>The <code class="xref py py-meth docutils literal notranslate"><span class="pre">advance()</span></code> method has been added to the API.</p></li>
+<li><p>The <code class="xref py py-meth docutils literal notranslate"><span class="pre">choose2()</span></code> method has been replaced by an optional argument to <code class="xref py py-meth docutils literal notranslate"><span class="pre">choose()</span></code>.</p></li>
+<li><p>The <code class="xref py py-meth docutils literal notranslate"><span class="pre">populate_at()</span></code> method has been replaced by an optional argument to <code class="xref py py-meth docutils literal notranslate"><span class="pre">populate()</span></code>.</p></li>
+<li><p>There is a new method <code class="xref py py-meth docutils literal notranslate"><span class="pre">discrete_blend()</span></code> useful for creating models using a different paradigm
+from PyIBL’s usual <code class="xref py py-meth docutils literal notranslate"><span class="pre">choose()</span></code>/<code class="xref py py-meth docutils literal notranslate"><span class="pre">respond()</span></code> cycle.</p></li>
+<li><p>It is now possible to set <code class="xref py py-attr docutils literal notranslate"><span class="pre">optimized_learning</span></code> as an <code class="xref py py-class docutils literal notranslate"><span class="pre">Agent</span></code> parameter in the usual way, instead
+of as an argument to <code class="xref py py-meth docutils literal notranslate"><span class="pre">reset()</span></code>. In addition, <code class="xref py py-attr docutils literal notranslate"><span class="pre">optimized_learning</span></code> can now take positive integers
+as its value, enabling a mixed mode of operation.</p></li>
+<li><p>The default value of <code class="xref py py-attr docutils literal notranslate"><span class="pre">default_utility_populates</span></code> is now <code class="docutils literal notranslate"><span class="pre">False</span></code>, and it can be set at <code class="xref py py-class docutils literal notranslate"><span class="pre">Agent</span></code>
+creation time with an argument to the constructor.</p></li>
+<li><p>There is a new <code class="xref py py-class docutils literal notranslate"><span class="pre">Agent</span></code> property, <code class="xref py py-attr docutils literal notranslate"><span class="pre">fixed_noise</span></code>, allowing a variant noise generation scheme
+for unusual models.</p></li>
+<li><p>General tidying and minor bug fixes.</p></li>
+</ul>
+<p>When upgrading existing version 4.x models to version 5.0 or later some syntactic changes will nearly always
+have to be made. In particular, PyIBL no longer abuses Python’s keyword arguments, and lists of choices now need
+to be passed to <code class="xref py py-meth docutils literal notranslate"><span class="pre">choose()</span></code> and <code class="xref py py-meth docutils literal notranslate"><span class="pre">populate()</span></code>, which now also take their arguments in a different order.
+In simple cases this is as easy as surrounding the formerly trailing arguments by square bracket, and swapping
+the result two arguments. For more complex cases it may be necessary to pass a list of dictionaries.
+For example, what in version 4.x would have been expressed as</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">a</span><span class="o">.</span><span class="n">populate</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="s2">&quot;red&quot;</span><span class="p">,</span> <span class="s2">&quot;blue&quot;</span><span class="p">)</span>
+<span class="n">a</span><span class="o">.</span><span class="n">choose</span><span class="p">(</span><span class="s2">&quot;red&quot;</span><span class="p">,</span> <span class="s2">&quot;blue&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>could be expressed in version 5.0 as</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">a</span><span class="o">.</span><span class="n">populate</span><span class="p">([</span><span class="s2">&quot;red&quot;</span><span class="p">,</span> <span class="s2">&quot;blue&quot;</span><span class="p">],</span> <span class="mi">10</span><span class="p">)</span>
+<span class="n">a</span><span class="o">.</span><span class="n">choose</span><span class="p">([</span><span class="s2">&quot;red&quot;</span><span class="p">,</span> <span class="s2">&quot;blue&quot;</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>If you are using partial matching you will also have to replace calls to the <code class="xref py py-func docutils literal notranslate"><span class="pre">similarity()</span></code> function by
+the <code class="xref py py-class docutils literal notranslate"><span class="pre">Agent</span></code>’s <code class="xref py py-meth docutils literal notranslate"><span class="pre">similarity()</span></code> method. This method also takes slightly different arguments than
+the former function.
+For example, what in version 4.x would have been expressed as</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">similarity</span><span class="p">(</span><span class="n">cubic_similarity</span><span class="p">,</span> <span class="s2">&quot;weight&quot;</span><span class="p">,</span> <span class="s2">&quot;volume&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>could be expressed in version 5.0 as</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">a</span><span class="o">.</span><span class="n">similarity</span><span class="p">([</span><span class="s2">&quot;weight&quot;</span><span class="p">,</span> <span class="s2">&quot;volume&quot;</span><span class="p">],</span> <span class="n">cubic_similarity</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="older-versions">
+<h2>Older versions<a class="headerlink" href="#older-versions" title="Link to this heading">¶</a></h2>
+<section id="from-version-4-2-to-4-2-0-1">
+<h3>from version 4.2 to  4.2.0.1<a class="headerlink" href="#from-version-4-2-to-4-2-0-1" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>PyIBL is now distributed via PyPi and need no longer be downloaded from the DDMLab website.</p></li>
+</ul>
+</section>
+<section id="from-version-4-1-to-4-2">
+<h3>from version 4.1 to  4.2<a class="headerlink" href="#from-version-4-1-to-4-2" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>The <code class="xref py py-meth docutils literal notranslate"><span class="pre">choose2()</span></code> method has been added to the API.</p></li>
+<li><p>The <code class="xref py py-meth docutils literal notranslate"><span class="pre">respond()</span></code> method now takes a second, optional argument.</p></li>
+<li><p>There is more flexability possible when partially matching attributes.</p></li>
+<li><p>PyIBL now requires Pythonn verison 3.7 or later.</p></li>
+<li><p>General tidying and minor bug fixes.</p></li>
+</ul>
+</section>
+<section id="from-version-4-0-to-4-1">
+<h3>from version 4.0 to 4.1<a class="headerlink" href="#from-version-4-0-to-4-1" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>The API for <code class="xref py py-class docutils literal notranslate"><span class="pre">DelayedFeedback</span></code> has been changed.</p></li>
+<li><p>The <code class="xref py py-meth docutils literal notranslate"><span class="pre">reset()</span></code> now has an additional, optional argument, <em>preserve_prepopulated</em>.</p></li>
+<li><p>Some minor bug fixes.</p></li>
+</ul>
+</section>
+<section id="from-version-3-0-to-4-0">
+<h3>from version 3.0 to 4.0<a class="headerlink" href="#from-version-3-0-to-4-0" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>Situations and SituationDecisions are no longer needed. Choices are now ordinary
+Python objects, such as dicts and lists.</p></li>
+<li><p>The overly complex logging mechanism was a rich source of confusion and bugs. It
+has been eliminated, and replaced by a simpler mechanism, <code class="xref py py-attr docutils literal notranslate"><span class="pre">details</span></code>, which
+facilitates the construction of rich log files in whatever forms may be desired.</p></li>
+<li><p>Populations were rarely used, badly understood and even when they
+were used were mostly just used to facilitate logging from multiple
+agents; in version 4.0 populations have been eliminated, though they may come
+back in a different form in a future version of PyIBL.</p></li>
+<li><p>Methods and attributes are now uniformly spelled in <code class="docutils literal notranslate"><span class="pre">snake_case</span></code> instead of <code class="docutils literal notranslate"><span class="pre">camelCase</span></code>.</p></li>
+<li><p>Many attributes of Agents can now be specified when they are created.</p></li>
+<li><p>Similarities are now shared between Agents, by attribute name, rather than being
+specific to an Agent.</p></li>
+<li><p>Several common similarity functions are predefined.</p></li>
+<li><p>The current <code class="xref py py-attr docutils literal notranslate"><span class="pre">time</span></code> can now be queried.</p></li>
+<li><p>Delayed feedback is now supported.</p></li>
+<li><p>PyIBL is now built on top of <a class="reference external" href="http://halle.psy.cmu.edu/pyactup/">PyACTUp</a>.</p></li>
+<li><p>Some bugs have been fixed, and things have been made generally tidier internally.</p></li>
+</ul>
+</section>
+<section id="from-version-2-0-to-3-0">
+<h3>from version 2.0 to 3.0<a class="headerlink" href="#from-version-2-0-to-3-0" title="Link to this heading">¶</a></h3>
+<ul>
+<li><p>Similarity and partial matching are now implemented.</p></li>
+<li><p>SituationDecisions have changed completely, and are no longer created by an Agent.</p></li>
+<li><p>Logging has changed substantially: there can be multiple, differently configured
+logs; it is now possible to have per-Agent logs, not just Population-wide logs;
+and logging configuration now controls not just which columns are shown, but
+the order in which they appear.</p></li>
+<li><p>Default values of noise and decay are now 0.25 and 0.5, respectively, matching
+oral common practice in ACT-R, instead of ACT-R’s out of the box defaults, which
+are rarely useful.</p></li>
+<li><p>General internal tidying</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Note that version 3.0 was never publicly released though
+preliminary internal development versions of it were used for a
+variety of experiments, both within the DDMLab and elsewhere.</p>
+</div>
+</li>
+</ul>
+</section>
+<section id="from-version-1-0-to-2-0">
+<h3>from version 1.0 to 2.0<a class="headerlink" href="#from-version-1-0-to-2-0" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>Agents are now publicly visible objects that can be passed around and moved from
+one Population to another. The API has completely changed so that you no longer
+cite an agent by name in a Population.</p></li>
+<li><p>Options presented to Agents are no longer merely decisions, but include situations as well.</p></li>
+<li><p>Logging is configured with strings rather than constants.</p></li>
+<li><p>Logging can now be configured to include or exclude unused options and instances.</p></li>
+<li><p>Bug fixes, particularly in logging.</p></li>
+<li><p>Better documentation.</p></li>
+<li><p>General internal tidying</p></li>
+</ul>
+</section>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &#169;2014-2024 Carnegie Mellon University.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.3.7</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
+      
+      |
+      <a href="_sources/changes.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
