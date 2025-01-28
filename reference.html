@@ -5,10 +5,10 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Reference &#8212; PyIBL 5.1.6 documentation</title>
+    <title>Reference &#8212; PyIBL 5.2.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d1102ebc" />
     <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=a66d8bb5" />
-    <script src="_static/documentation_options.js?v=d050982f"></script>
+    <script src="_static/documentation_options.js?v=2dde5210"></script>
     <script src="_static/doctools.js?v=9a2dae69"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -138,7 +138,7 @@ facilities for inspecting details of the IBL decision making process programmati
 facilitating debugging, logging and fine grained control of complex models.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="pyibl.Agent">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyibl.</span></span><span class="sig-name descname"><span class="pre">Agent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">attributes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noise</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.25</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">decay</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mismatch_penalty</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimized_learning</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_utility</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_utility_populates</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fixed_noise</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyibl.Agent" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyibl.</span></span><span class="sig-name descname"><span class="pre">Agent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">attributes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noise</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.25</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">decay</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mismatch_penalty</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimized_learning</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_utility</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_utility_populates</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fixed_noise</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyibl.Agent" title="Link to this definition">¶</a></dt>
 <dd><p>A cognitive entity learning and making decisions based on its experience from prior decisions.
 The main entry point to PyIBL. An Agent has a <em>name</em>, a string, which can be retrieved
 with the <a class="reference internal" href="#pyibl.Agent.name" title="pyibl.Agent.name"><code class="xref py py-attr docutils literal notranslate"><span class="pre">name</span></code></a> property. The name cannot be changed after an agent is created.
@@ -378,10 +378,10 @@ When a default utility is needed that function will be called, passing the choic
 in question to it, and the value returned, which should be a Real, will be used.
 If at that time the value is not a function of one argument, or it does not return
 a Real, a <code class="xref py py-exc docutils literal notranslate"><span class="pre">RuntimeError</span></code> is raised.</p>
-<p>The <a class="reference internal" href="#pyibl.Agent.default_utility_populates" title="pyibl.Agent.default_utility_populates"><code class="xref py py-attr docutils literal notranslate"><span class="pre">default_utility_populates</span></code></a> property, which is <code class="docutils literal notranslate"><span class="pre">False</span></code> by default,
+<p>The <a class="reference internal" href="#pyibl.Agent.default_utility_populates" title="pyibl.Agent.default_utility_populates"><code class="xref py py-attr docutils literal notranslate"><span class="pre">default_utility_populates</span></code></a> property, which is <code class="docutils literal notranslate"><span class="pre">True</span></code> by default,
 controls whether or not an instance is added for each interrogation of
 the <a class="reference internal" href="#pyibl.Agent.default_utility" title="pyibl.Agent.default_utility"><code class="xref py py-attr docutils literal notranslate"><span class="pre">default_utility</span></code></a> property. If an instance is added, it is added
-as by <a class="reference internal" href="#pyibl.Agent.populate" title="pyibl.Agent.populate"><code class="xref py py-meth docutils literal notranslate"><span class="pre">populate()</span></code></a> at the current time.</p>
+as by <a class="reference internal" href="#pyibl.Agent.populate" title="pyibl.Agent.populate"><code class="xref py py-meth docutils literal notranslate"><span class="pre">populate()</span></code></a> at time zero.</p>
 <p>Setting <a class="reference internal" href="#pyibl.Agent.default_utility" title="pyibl.Agent.default_utility"><code class="xref py py-attr docutils literal notranslate"><span class="pre">default_utility</span></code></a> to <code class="docutils literal notranslate"><span class="pre">None</span></code> or <code class="docutils literal notranslate"><span class="pre">False</span></code> (the initial default)
 causes no default utility to be used. In this case, if <a class="reference internal" href="#pyibl.Agent.choose" title="pyibl.Agent.choose"><code class="xref py py-meth docutils literal notranslate"><span class="pre">choose()</span></code></a> is called
 for a decision in a situation for which there is no instance available, a
@@ -392,7 +392,8 @@ for a decision in a situation for which there is no instance available, a
 <dt class="sig sig-object py" id="pyibl.Agent.default_utility_populates">
 <span class="sig-name descname"><span class="pre">default_utility_populates</span></span><a class="headerlink" href="#pyibl.Agent.default_utility_populates" title="Link to this definition">¶</a></dt>
 <dd><p>Whether or not a default utility provided by the <a class="reference internal" href="#pyibl.Agent.default_utility" title="pyibl.Agent.default_utility"><code class="xref py py-attr docutils literal notranslate"><span class="pre">default_utility</span></code></a> property is also entered as an instance in memory.
-This property has no effect if default_utility has been set to <code class="docutils literal notranslate"><span class="pre">None</span></code> or <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
+When such an instance is added it is added at time zero. This property has no
+effect if default_utility has been set to <code class="docutils literal notranslate"><span class="pre">None</span></code> or <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -496,7 +497,9 @@ similarity function is used which returns one if its two arguments are <code cla
 zero otherwise. If, when called, the function returns a number outside that range
 a <code class="xref py py-exc docutils literal notranslate"><span class="pre">RuntimeError</span></code> is raised. If, when the similarity function is called, the
 return value is not a real number a <code class="xref py py-exc docutils literal notranslate"><span class="pre">ValueError</span></code> is raised.</p>
-<p>The <em>weight</em> should be a positive, real number, and defaults to one.</p>
+<p>The <em>weight</em>, if present, should be a positive, real number, no greater than one.
+When <a class="reference internal" href="#pyibl.Agent.choose" title="pyibl.Agent.choose"><code class="xref py py-meth docutils literal notranslate"><span class="pre">choose()</span></code></a> is called if some attributes weights have been set then their
+sum must be no more than one; if it is greater a <code class="xref py py-exc docutils literal notranslate"><span class="pre">RuntimeError</span></code> is raised.</p>
 <p>Similarity functions are only called when the <cite>Agent</cite> has a
 <a class="reference internal" href="#pyibl.Agent.mismatch_penalty" title="pyibl.Agent.mismatch_penalty"><code class="xref py py-attr docutils literal notranslate"><span class="pre">mismatch_penalty</span></code></a> specified. When a similarity function is called it is
 passed two arguments, attribute values to compare. The function should be
@@ -504,9 +507,9 @@ commutative; that is, if called with the same arguments in the reverse order, it
 should return the same value. It should also be stateless, always returning the
 same values if passed the same arguments. If either of these constraints is
 violated no error is raised, but the results will, in most cases, be meaningless.</p>
-<p>If one of <em>function</em> or <em>weight</em> is omitted but the other is supplied, the
-supplied item is set with the omitted one unchanged. If called with neither
-<em>function</em> nor <em>weight</em> the similarity function is removed.</p>
+<p>If one of <em>function</em> or <em>weight</em> is omitted or <code class="docutils literal notranslate"><span class="pre">None</span></code> but the other is supplied,
+the supplied item is set with the omitted one unchanged. If called with both
+<em>function</em> nor <em>weight</em> unsupplied or <code class="docutils literal notranslate"><span class="pre">None</span></code> the similarity function is removed.</p>
 <p>In the following examples the height and width are assumed to range from zero to
 ten, and similarity of either is computed linearly, as the difference between them
 normalized by the maximum length of ten. The colors pink and red are considered
@@ -1141,7 +1144,7 @@ respectively, is instead used as the argument’s value.</p>
     <div class="clearer"></div>
   </div>
     <div class="footer">
-      &#169;2014-2024 Carnegie Mellon University.
+      &#169;2014-2025 Carnegie Mellon University.
       
       |
       Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.3.7</a>
