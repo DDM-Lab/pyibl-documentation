@@ -13,6 +13,8 @@
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Changes" href="changes.html" />
+    <link rel="prev" title="Multi-agent network example" href="multi-agent-network.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -40,13 +42,23 @@
 
 
 <h3>Navigation</h3>
-<ul>
+<ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="index.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
 <li class="toctree-l1"><a class="reference internal" href="reference.html">Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="internals.html">Internals</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="examples.html">Examples</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="binary-choice.html">Binary choice example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rock-paper-scissors.html">Rock paper scissors game example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="multi-agent-network.html">Multi-agent network example</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Box game example</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#code">Code</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#results">Results</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="changes.html">Changes</a></li>
 </ul>
 
@@ -54,6 +66,10 @@
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="examples.html">Examples</a><ul>
+      <li>Previous: <a href="multi-agent-network.html" title="previous chapter">Multi-agent network example</a></li>
+      <li>Next: <a href="changes.html" title="next chapter">Changes</a></li>
+  </ul></li>
   </ul></li>
 </ul>
 </div>
@@ -85,7 +101,7 @@
             
   <section id="box-game-example">
 <h1>Box game example<a class="headerlink" href="#box-game-example" title="Link to this heading">¶</a></h1>
-<p>In this game we describe an experiment involving the player having to make two different, though interrelated, decisions at each round.
+<p>In this section we describe an experiment involving the player having to make two different, though interrelated, decisions at each round.
 This corresponds to some so far unpublished work in the DDMLab, a highly stylized example of a cyber defense task.</p>
 <p>In this game the player is given a choice of opening one of two boxes, 1 or 2, one of which contains a reward.
 An automated defender is defending one of the boxes, but it can defend only one.
@@ -98,7 +114,18 @@ Not opening a box, or opening a box that does not contain the reward has no effe
 In each of these conditions there is a probability of 0.5 that the reward will be in box 1, and otherwise it will be in box 2.
 In the first three conditions there is also a probability of 0.5 that a particular box is defended.
 These three conditions differ in the probability of the user being <em>told</em> that the box is defended.</p>
-<p>[more to come]</p>
+<ul class="simple">
+<li><p>In the “1 way” condition if the box is defended and warning signal is always given (this parameter is referred to as <em>p</em>, and in this case is thus 1);
+and if the box is not defended there is an 0.5 probability (this parameteer is referred to as <em>q</em>, and in this case is 0.5) that the warning
+signal is nonetheless given.</p></li>
+<li><p>In the “2 way (0.75)” condition if the box is defended the warning signal is issued 75% of the time (<em>p</em> = 0.75); and if the box
+is not defended it is issued 37.5% of the time (<em>q</em> = 0.375).</p></li>
+<li><p>In the “2 way (0.5) condition if the box is defended the warning signal is issued 50% of the time (<em>p</em> = 0.5); and if the box
+is not defended it is issued 25% of the time (<em>q</em> = 0.25).</p></li>
+</ul>
+<p>The fourth condition is a degenerate “control” condition in which no warning signal is ever issued (referred to as the “no signaling” condition).</p>
+<section id="code">
+<h2>Code<a class="headerlink" href="#code" title="Link to this heading">¶</a></h2>
 <p>The source file for this experiment and model can
 :download:be downloaded &lt;/_downloads/box-game.zip&gt;`.
 To run this install the dependencies from the <code class="docutils literal notranslate"><span class="pre">requirements.txt</span></code> file and then simply call Python on the <code class="docutils literal notranslate"><span class="pre">box_game.py</span></code> source file.
@@ -252,12 +279,17 @@ with the prepopulated values being one each of the best and worst possible resul
 whether or not to attack. Once the resulting payoff is known both Agents are updated to reflect that payoff.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">main</span></code> function calls <code class="docutils literal notranslate"><span class="pre">run</span></code> for each of the conditions, collects their results, and displays a bar graph comparing them.
 The <code class="docutils literal notranslate"><span class="pre">click</span></code> module is used to provide the opportunity to run things with different numbers of rounds and participatns, as well as different
-IBL parameters, though the default values of all are sensible.
-Here is a graph of of the results when run with 1,000 participants and 50 rounds for each (the default values); note that when running
+IBL parameters, though the default values of all are sensible.</p>
+<p>Note that additional conditions can be easily added by amending the definition of the <code class="docutils literal notranslate"><span class="pre">CONDITIONS</span></code> constant.</p>
+</section>
+<section id="results">
+<h2>Results<a class="headerlink" href="#results" title="Link to this heading">¶</a></h2>
+<p>Here is a graph of of the results when run with 1,000 participants and 50 rounds for each (the default values); note that when running
 this yourself the results may differ slightly, since the model is, of course, stochastic, but the results should be similar:</p>
 <img alt="_images/box-game-model-results.png" class="align-center" src="_images/box-game-model-results.png" />
 <p>The DDMLab has also run this task, with the same conditions, with an ensemble of human participants, with the following results:</p>
 <img alt="_images/box-game-human-data.png" class="align-center" src="_images/box-game-human-data.png" />
+</section>
 </section>
 
 
