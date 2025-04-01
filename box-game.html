@@ -53,6 +53,7 @@
 <li class="toctree-l2"><a class="reference internal" href="rock-paper-scissors.html">Rock paper scissors game example</a></li>
 <li class="toctree-l2"><a class="reference internal" href="multi-agent-network.html">Multi-agent network example</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Box game example</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#description">Description</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#code">Code</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#results">Results</a></li>
 </ul>
@@ -103,6 +104,8 @@
 <h1>Box game example<a class="headerlink" href="#box-game-example" title="Link to this heading">¶</a></h1>
 <p>In this section we describe an experiment involving the player having to make two different, though interrelated, decisions at each round.
 This corresponds to some so far unpublished work in the DDMLab, a highly stylized example of a cyber defense task.</p>
+<section id="description">
+<h2>Description<a class="headerlink" href="#description" title="Link to this heading">¶</a></h2>
 <p>In this game the player is given a choice of opening one of two boxes, 1 or 2, one of which contains a reward.
 An automated defender is defending one of the boxes, but it can defend only one.
 The player first chooses the box they are considering opening, but does not yet open it.
@@ -124,6 +127,7 @@ is not defended it is issued 37.5% of the time (<em>q</em> = 0.375).</p></li>
 is not defended it is issued 25% of the time (<em>q</em> = 0.25).</p></li>
 </ul>
 <p>The fourth condition is a degenerate “control” condition in which no warning signal is ever issued (referred to as the “no signaling” condition).</p>
+</section>
 <section id="code">
 <h2>Code<a class="headerlink" href="#code" title="Link to this heading">¶</a></h2>
 <p>The source file for this experiment and model can
