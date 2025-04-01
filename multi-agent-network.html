@@ -13,7 +13,6 @@
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Insider attack example" href="insider-attack.html" />
     <link rel="prev" title="Rock paper scissors game example" href="rock-paper-scissors.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
@@ -59,7 +58,6 @@
 <li class="toctree-l3"><a class="reference internal" href="#results">Results</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="insider-attack.html">Insider attack example</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="changes.html">Changes</a></li>
@@ -71,7 +69,6 @@
   <li><a href="index.html">Documentation overview</a><ul>
   <li><a href="examples.html">Examples</a><ul>
       <li>Previous: <a href="rock-paper-scissors.html" title="previous chapter">Rock paper scissors game example</a></li>
-      <li>Next: <a href="insider-attack.html" title="next chapter">Insider attack example</a></li>
   </ul></li>
   </ul></li>
 </ul>
@@ -120,11 +117,11 @@ both “defect” by by each picking B. The difference is in the outcome if one 
 In the interdependence game</p>
 <img alt="_images/interdependence.png" class="align-center" src="_images/interdependence.png" />
 <p>each player receives the five point reward whenever the <em>other</em> play picks A, regadless of this player’s choice:</p>
-<p>For this example weach player makes their choices with no knowledge of the reward matrices, nor any knowledge of the other player’s choices. All they know
+<p>For this example each player makes their choices with no knowledge of the reward matrices, nor any knowledge of the other player’s choices. All they know
 if what they themselves choose, and what rewards they receive.</p>
 <p>In a normally played single independence game of many rounds we might expect both players to quickly settle on choosing A since that always rewards them.
 Naïvely we might similarly expect that in a similar version of the interdependence game for each player to essentially play randomly, since over the course
-of a single choice which choice they make has no effect on their reward. However there is a deep subtlety to this game where without any explicit transfer
+of a single choice which choice they made has no effect on their reward. However there is a deep subtlety to this game where without any explicit transfer
 of information between the players, over the course of several moves they will be driven to both pick A. This is driven by a natural weighting of
 recent results over earlier ones, resulting in a roughly win-stay/lose-shift strategy, which curiously over a two move sequence can drive the players
 to coöperate.</p>
